@@ -1,0 +1,139 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap'); */
+
+/* .font-onest {
+  font-family: 'Onest', sans-serif;
+} */
+
+@import "tailwindcss";
+@tailwind base;
+
+/* @plugin "daisyui"; */
+
+:root {
+  /* --background: #ffffff; */
+  /* --foreground: #171717; */
+  font-family: "Onest", sans-serif;
+  /* background-color: #121212; */
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.theme-box {
+  @apply bg-[#f9f9fa] dark:bg-[#1a1a1a] text-black dark:text-white;
+}
+
+/* nprogress custom overrides */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: #29d;
+  /* your brand color */
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+  /* thickness */
+}
+
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px #29d, 0 0 5px #29d;
+  opacity: 1;
+  transform: rotate(3deg) translate(0px, -4px);
+}
+
+#nprogress .spinner {
+  display: none;
+  /* hide spinner */
+}
+
+
+.eHAmuB {
+  display: block;
+}
+
+.fCzDDc {
+  width: 323.5px;
+}
+
+.jZMdJd {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.fLEZPc {
+  width: 56px;
+  width: 56px;
+  background: rgba(33, 33, 33);
+  border-radius: 50%;
+  position: relative;
+}
+
+.dXonOA {
+  height: 56px;
+  width: 124px;
+  background: rgb(33, 33, 33);
+  border-radius: 52%;
+  position: relative;
+}
+
+.jFfECc {
+  display: grid;
+  grid-template-columns: 56px 56px;
+  width: 100%;
+  gap: 10px;
+}
+
+.text-d-gray{
+  color: rgb(128, 128, 128);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.6s;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px; /* thin */
+}
+
+::-webkit-scrollbar-track {
+  background: #111; /* dark bg */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444; /* gray thumb */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666; /* lighter when hover */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
