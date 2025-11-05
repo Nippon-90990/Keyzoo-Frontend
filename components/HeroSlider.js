@@ -69,7 +69,7 @@ const HeroSlider = () => {
         loop
         pagination={{ clickable: true }}
         navigation
-        className="w-full h-full rounded-xl overflow-hidden shadow-2xl"
+        className="w-full h-full rounded-xl overflow-hidden"  //{/* shadow-2xl */}
       >
         {banners.map((banner) => {
 
@@ -82,25 +82,64 @@ const HeroSlider = () => {
 
           const imgUrl = getStrapiMedia(banner.image?.url);
 
+          // return (
+          //   <SwiperSlide key={banner.id} >
+          //     <Link href={banner.title || '#'}>
+          //       <div className="relative h-[450px] w-full shadow-n">
+          //       {/* <div className="relative w-full h-[250px] sm:h-[320px] md:h-[420px] lg:h-[500px] xl:h-[620px]"> */}
+          //         <Image src={imgUrl} alt={banner.title} fill className="object-center filter brightness-110 contrast-120 saturate-110" />
+          //         <div className="absolute inset-0 bg-black/20 flex flex-col justify-center items-center text-white text-center p-6">
+          //         {/* <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white text-center p-4 sm:p-6 md:p-10"> */}
+          //           {/* <h2 className="text-3xl md:text-5xl font-bold">{banner.link}</h2> */}
+          //           <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold leading-tight">{banner.link}</h2>
+          //           <p className="mt-2 text-lg md:text-xl">{banner.subtitle}</p>
+          //           {/* <button className="mt-6 bg-white text-black font-semibold px-6 py-2 rounded-xl hover:bg-gray-200 transition">
+          //           Buy Now
+          //         </button> */}
+          //         </div>
+          //       </div>
+          //     </Link>
+          //   </SwiperSlide>
+          // );
+
           return (
-            <SwiperSlide key={banner.id} >
-              <Link href={banner.title || '#'}>
-                {/* <div className="relative h-[450px] w-full shadow-n"> */}
-                <div className="relative w-full h-[250px] sm:h-[320px] md:h-[420px] lg:h-[500px] xl:h-[620px]">
-                  <Image src={imgUrl} alt={banner.title} fill className="object-center filter brightness-110 contrast-120 saturate-110" />
-                  {/* <div className="absolute inset-0 bg-black/20 flex flex-col justify-center items-center text-white text-center p-6"> */}
-                  <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white text-center p-4 sm:p-6 md:p-10">
-                    {/* <h2 className="text-3xl md:text-5xl font-bold">{banner.link}</h2> */}
-                    <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold leading-tight">{banner.link}</h2>
-                    <p className="mt-2 text-lg md:text-xl">{banner.subtitle}</p>
-                    {/* <button className="mt-6 bg-white text-black font-semibold px-6 py-2 rounded-xl hover:bg-gray-200 transition">
-                    Buy Now
-                  </button> */}
-                  </div>
-                </div>
-              </Link>
-            </SwiperSlide>
+            <div className="relative rounded-2xl overflow-hidden shadow-lg">
+              <Swiper
+                modules={[Autoplay, Pagination, Navigation]}
+                autoplay={{ delay: 5000, disableOnInteraction: false }}
+                pagination={{ clickable: true }}
+                navigation
+                loop
+                className="rounded-2xl overflow-hidden"
+              >
+                {/* {slides.map((slide) => ( */}
+                  <SwiperSlide key={banner.id}>
+                    <div className="relative h-[250px] sm:h-[320px] md:h-[400px] lg:h-[500px] w-full">
+                      <Image
+                        src={imgUrl}
+                        alt={banner.title}
+                        fill
+                        className="object-center"
+                        priority
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center px-6">
+                        <h2 className="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
+                          {banner.title}
+                        </h2>
+                        {/* <p className="text-xl font-semibold bg-[#ff4e00] px-5 py-2 rounded-md inline-block mb-4">
+                          {banner.subtitle}
+                        </p> */}
+                        {/* <button className="bg-white text-black font-semibold px-8 py-2.5 rounded-lg hover:bg-gray-200 transition">
+                          {banner.button}
+                        </button> */}
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                {/* ))} */}
+              </Swiper>
+            </div>
           );
+
         })}
       </Swiper>
     </>

@@ -1,5 +1,6 @@
 // DrifflePlusSection.js
-import { CheckCircle2 } from "lucide-react";
+// import { CheckCircle2 } from "lucide-react";
+import { CircleCheckBig } from 'lucide-react';
 import Link from "next/link";
 
 export default function DrifflePlusSection() {
@@ -34,7 +35,7 @@ export default function DrifflePlusSection() {
 
                     <Link href={'/comingsoon'}>
                         <button className="mt-6 px-6 py-2 rounded-md bg-purple-500 text-white font-semibold hover:bg-purple-600 transition">
-                            Join now 
+                            Join now
                         </button>
                     </Link>
                 </div>
@@ -47,19 +48,19 @@ export default function DrifflePlusSection() {
 
                     <ul className="space-y-3 text-white text-sm sm:text-base">
                         <li className="flex items-start gap-3">
-                            <CheckCircle2 className="text-white mt-0.5" size={18} />
+                            <CircleCheckBig className="text-white mt-0.5" size={18} />
                             <span>Up to 10% OFF on Games, Gift Cards, DLCs and more</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <CheckCircle2 className="text-white mt-0.5" size={18} />
+                            <CircleCheckBig className="text-white mt-0.5" size={18} />
                             <span>Access to exclusive sale events and promotions</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <CheckCircle2 className="text-white mt-0.5" size={18} />
+                            <CircleCheckBig className="text-white mt-0.5" size={18} />
                             <span>Priority pre-order fulfillment</span>
                         </li>
                         <li className="flex items-start gap-3">
-                            <CheckCircle2 className="text-white mt-0.5" size={18} />
+                            <CircleCheckBig className="text-white mt-0.5" size={18} />
                             <span>Priority support</span>
                         </li>
                     </ul>

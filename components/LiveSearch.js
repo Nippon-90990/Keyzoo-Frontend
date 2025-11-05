@@ -6,13 +6,29 @@ import Link from "next/link";
 import debounce from "lodash.debounce";
 import Image from "next/image";
 import useCurrency from "@/hook/useCurrency";
+import { useRouter } from "next/router";
 
-export default function LiveSearch() {
+export default function LiveSearch({ isSearchOpen, setIsSearchOpen }) {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef(null);
     const { symbol } = useCurrency();
+    const router = useRouter();
+    // const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    useEffect(() => {
+        const handleRouteChange = () => {
+            setShowResults(false);
+            setQuery("");
+            setIsSearchOpen(false); // 🟣 Close overlay input
+        };
+
+        router.events.on("routeChangeStart", handleRouteChange);
+        return () => {
+            router.events.off("routeChangeStart", handleRouteChange);
+        };
+    }, [router]);
 
     // const fetchResults = debounce(async (q) => {
     //     if (!q) {
@@ -97,22 +113,22 @@ export default function LiveSearch() {
 
 
     return (
-        <div ref={searchRef} className="">
-            <input
-                type="text"
-                placeholder="Search for games, gift cards and more"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => {
-                    if (query) setShowResults(true);
-                }}
-                className="w-full pl-10 pr-4 py-2.5 rounded-md bg-white text-black placeholder-gray-500 focus:outline-none"
-            />
+        <>
+            <div ref={searchRef} className={`${isSearchOpen ? 'block' : 'hidden md:block'}`}>
+                <input
+                    type="text"
+                    placeholder="Search for games, gift cards and more"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => {
+                        if (query) setShowResults(true);
+                    }}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-md bg-white text-black placeholder-gray-500 focus:outline-none"
+                />
 
-            {showResults && (
-                results.length > 0 ? (
-                    <ul className="absolute left-0 right-0 bg-[#1a1a1a] text-white rounded-lg shadow z-50 mt-5 max-h-[500px] overflow-y-auto scrollbar-thin">
-                        {results.map((item) => {
+                {showResults && (
+                    results.length > 0 ? (
+                        <ul className="absolute left-0 right-0 bg-[#1a1a1a] text-white rounded-lg shadow z-50 mt-5 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin md:max-h-[500px] transition-all duration-300 ease-in-out">                        {results.map((item) => {
 
                             // const discountPercent = Math.round(
                             //     100 - (item.price / item.originalPrice) * 100
@@ -131,6 +147,7 @@ export default function LiveSearch() {
                                             onClick={() => {
                                                 setQuery("");   // Clear input
                                                 setResults([]); // Clear results
+                                                setIsSearchOpen(false);
                                             }}
                                         >
                                             {/* Thumbnail */}
@@ -161,17 +178,18 @@ export default function LiveSearch() {
                                 </div>
                             );
                         })}
-                    </ul>
-                ) : (
-                    query && (
-                        <ul className="absolute left-0 right-0 bg-[#1a1a1a] text-white rounded-lg shadow z-50 mt-5">
-                            <li className="p-4 text-center text-gray-400">
-                                No products found.
-                            </li>
                         </ul>
+                    ) : (
+                        query && (
+                            <ul className="absolute left-0 right-0 bg-[#1a1a1a] text-white rounded-lg shadow z-50 mt-5">
+                                <li className="p-4 text-center text-gray-400">
+                                    No products found.
+                                </li>
+                            </ul>
+                        )
                     )
-                )
-            )}
-        </div>
+                )}
+            </div>
+        </>
     );
 }

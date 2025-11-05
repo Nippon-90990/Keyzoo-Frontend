@@ -116,6 +116,7 @@ body {
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px; /* thin */
+  height: 6px; /* thin */
 }
 
 ::-webkit-scrollbar-track {

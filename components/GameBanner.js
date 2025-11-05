@@ -3,14 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { fetchFromStrapi } from '@/lib/strapi';
 
-const CategoryGrid = () => {
+const GameBanner = () => {
   const [banners, setBanners] = useState([]);
 
 
   useEffect(() => {
     async function fetchPromoBanners() {
       try {
-        const res = await fetchFromStrapi('api/promo-banners?populate=image');
+        const res = await fetchFromStrapi('api/game-banners?populate=image');
         setBanners(res.data || []);
       } catch (err) {
         console.error('Failed to load promo banners:', err);
@@ -40,7 +40,7 @@ const CategoryGrid = () => {
         return (
           <div className="flex flex-col gap-4.5">
             <Link key={item.id} href="#">
-              <div className="relative h-[210px] rounded-xl overflow-hidden group shadow-md hover:shadow-xl transition">
+              <div className="relative h-[280px] rounded-xl overflow-hidden group shadow-md hover:shadow-xl transition">
                 <Image
                   src={imgUrl}
                   alt={item.title}
@@ -62,4 +62,4 @@ const CategoryGrid = () => {
   );
 };
 
-export default CategoryGrid;
+export default GameBanner;

@@ -4,12 +4,19 @@ import Image from "next/image";
 import { CiTrash } from "react-icons/ci";
 import { LuPlus } from "react-icons/lu";
 import { LuMinus } from "react-icons/lu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useCurrency from "@/hook/useCurrency";
 import { loadStripe } from "@stripe/stripe-js";
 
 
-export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrease }) {
+export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrease, selectedPayment }) {
+
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        document.body.appendChild(script);
+    }, []);
 
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
     const { symbol } = useCurrency();
@@ -70,165 +77,156 @@ export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrea
         }
     };
 
-    // 🔹 Handle checkout call
-    // const handleCheckout = async () => {
-    //     if (cartItems.length === 0) {
-    //         alert("Your cart is empty.");
-    //         return;
-    //     }
-
-    //     setLoading(true);
-    //     // try {
-    //     //     const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/session`, {
-    //     //         method: "POST",
-    //     //         headers: { "Content-Type": "application/json" },
-    //     //         body: JSON.stringify({
-    //     //             items: cartItems.map(item => ({
-    //     //                 productId: item.id,
-    //     //                 quantity: item.quantity,
-    //     //             })),
-    //     //             email: "test@example.com", // later replace with actual user email
-    //     //             currency: "usd",
-    //     //         }),
-    //     //     });
-
-    //     //     const data = await res.json();
-
-    //     //     if (data.checkoutUrl) {
-    //     //         window.location.href = data.checkoutUrl; // Redirect to Stripe
-    //     //     } else {
-    //     //         alert("Failed to create checkout session");
-    //     //         console.error("Stripe API error:", data);
-    //     //     }
-    //     // } catch (err) {
-    //     //     console.error("Checkout error:", err);
-    //     //     alert("Something went wrong!");
-    //     // } finally {
-    //     //     setLoading(false);
-    //     // }
-
-    //     const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API}/checkout/session`, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             Authorization: `Bearer`, // if protected
-    //         },
-    //         body: JSON.stringify({
-    //             items: cart.map((product) => ({
-    //                 title: product.title,
-    //                 price: product.price,
-    //                 image: product.image?.url, // your image field
-    //                 quantity: product.quantity,
-    //             })),
-    //         }),
-    //     });
-
-    //     const data = await res.json();
-    //     if (data.url) {
-    //         window.location.href = data.url;
-    //     } else {
-    //         console.error("Stripe error:", data);
-    //     }
-    // };    THIS IS THE OLD CODE, I DID NOT USE IT BECAUSE IT WAS NOT TESTED AND I DID NOT WANT TO BREAK THE CODE, SO I USED THE NEW CODE BELOW...
+    // New handle checkout function with userId and email
 
     // const handleCheckout = async () => {
     //     try {
-    //         const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/session`, {
-    //             method: "POST",
-    //             headers: { "Content-Type": "application/json" },
-    //             body: JSON.stringify({
-    //                 cartItems,
-    //                 email: "buyer@example.com", // later replace with logged-in user email
-    //                 userId: "123",              // replace with actual Clerk/Strapi user id
-    //             }),
-    //         });
+    //         setLoading(true);
+    //         const user = JSON.parse(localStorage.getItem("user"));
+    //         const jwt = localStorage.getItem("jwt");
+
+    //         if (!user || !jwt) {
+    //             alert("Please log in to continue checkout");
+    //             return;
+    //         }
+
+    //         const res = await fetch(
+    //             `${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/session`,
+    //             {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Bearer ${jwt}`, // ✅ Send JWT
+    //                 },
+    //                 body: JSON.stringify({
+    //                     cartItems,
+    //                     email: user.email,   // ✅ from Strapi user
+    //                     userId: user.id,     // ✅ required by checkout controller
+    //                 }),
+    //             }
+    //         );
 
     //         const data = await res.json();
 
     //         if (data.url) {
-    //             const stripe = await stripePromise;
-    //             window.location.href = data.url; // ✅ Redirect user to Stripe checkout
+    //             window.location.href = data.url; // Redirect to Stripe
     //         } else {
+    //             console.error("Stripe error:", data);
     //             alert("Failed to start checkout");
     //         }
     //     } catch (err) {
     //         console.error("Checkout error:", err);
     //         alert("Something went wrong");
-    //     }
-    // };   // THIS IS THE NEW CODE, I USED IT BECAUSE IT WAS TESTED AND I DID NOT WANT TO BREAK THE CODE, SO I USED THE NEW CODE BELOW...
-
-    // components/Checkout/OrderSummary.js (handler)
-    // const handleCheckout = async () => {
-    //     try {
-    //         const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/session`, {
-    //             method: "POST",
-    //             headers: { "Content-Type": "application/json" },
-    //             body: JSON.stringify({
-    //                 cartItems: cartItems.map(i => ({
-    //                     title: i.title,
-    //                     price: i.price,
-    //                     image: i.image,     // you said you use `image`
-    //                     quantity: i.quantity,
-    //                 })),
-    //                 // email: "buyer@example.com", // optional; Checkout can collect too
-    //             }),
-    //         });
-
-    //         const data = await res.json();
-    //         if (data.url) {
-    //             window.location.href = data.url;
-    //         } else {
-    //             alert("Failed to start checkout");
-    //             console.error(data);
-    //         }
-    //     } catch (e) {
-    //         console.error(e);
-    //         alert("Checkout failed");
+    //         setLoading(false);
     //     }
     // };
 
-    // New handle checkout function with userId and email
-    
+    // components/Checkout/OrderSummary.js
     const handleCheckout = async () => {
+        setLoading(true);
+        const user = JSON.parse(localStorage.getItem("user"));
+        const jwt = localStorage.getItem("jwt");
+
+        if (!user || !jwt) {
+            alert("Please log in to continue checkout");
+            setLoading(false);
+            return;
+        }
+
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
-            const jwt = localStorage.getItem("jwt");
-
-            if (!user || !jwt) {
-                alert("Please log in to continue checkout");
-                return;
-            }
-
-            const res = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/session`,
-                {
+            if (selectedPayment.includes("Card") || selectedPayment === "AMEX") {
+                // 💳 STRIPE
+                const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/session`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${jwt}`, // ✅ Send JWT
+                        Authorization: `Bearer ${jwt}`,
                     },
+                    body: JSON.stringify({ cartItems, email: user.email, userId: user.id }),
+                });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+                else alert("Stripe checkout failed");
+            }
+
+            if (selectedPayment.includes("UPI") || selectedPayment === "Google Pay") {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/razorpay/create`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         cartItems,
-                        email: user.email,   // ✅ from Strapi user
-                        userId: user.id,     // ✅ required by checkout controller
+                        email: user.email,
+                        userId: user.id,
+                        total,
                     }),
-                }
-            );
+                });
+                const data = await res.json();
 
-            const data = await res.json();
+                const options = {
+                    key: data.key,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: "Your Brand",
+                    order_id: data.orderId,
+                    handler: async (response) => {
+                        // verify payment
+                        const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/razorpay/verify`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(response),
+                        });
+                        const verifyData = await verifyRes.json();
 
-            if (data.url) {
-                window.location.href = data.url; // Redirect to Stripe
-            } else {
-                console.error("Stripe error:", data);
-                alert("Failed to start checkout");
+                        if (verifyData.verified) {
+                            // call order success endpoint
+                            await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/orders/razorpay/success`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    orderId: data.orderId,
+                                    paymentId: response.razorpay_payment_id,
+                                    userId: user.id,
+                                    email: user.email,
+                                    cartItems,
+                                    amount: total,
+                                }),
+                            });
+
+                            window.location.href = "/success";
+                        } else {
+                            alert("Verification failed");
+                        }
+                    },
+                    prefill: { email: user.email },
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.open();
             }
+
+
+            else if (selectedPayment === "Crypto") {
+                // 🪙 Binance Pay (or other crypto gateway)
+                const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/binance/session`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                    body: JSON.stringify({ cartItems, email: user.email, userId: user.id }),
+                });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+                else alert("Crypto checkout failed");
+            }
+
         } catch (err) {
-            console.error("Checkout error:", err);
-            alert("Something went wrong");
+            console.error(err);
+            alert("Payment error");
+        } finally {
+            setLoading(false);
         }
     };
-
 
 
 
@@ -243,11 +241,11 @@ export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrea
                             alt={item.title}
                             height={120}
                             width={90}
-                            className="w-[90px] h-[120px] rounded object-cover flex-shrink-0"
+                            className="w-[70px] h-[100px] sm:w-[90px] sm:h-[120px] rounded object-cover flex-shrink-0"
                         />
 
                         <div className="flex flex-col flex-1 min-w-0">
-                            <h3 className="text-white font-semibold text-sm leading-tight break-words">
+                            <h3 className="text-white font-semibold text-sm leading-tight break-words line-clamp-2">
                                 {item.title}
                             </h3>
 
@@ -310,7 +308,7 @@ export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrea
             <p className="text-xs text-gray-500">
                 By proceeding through checkout, I acknowledge I have read and accepted the Terms and Conditions including the Privacy Policy and Refund Policy.
             </p>
-            <button onClick={handleCheckout} className="space-y-4 w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded font-semibold cursor-pointer">Pay Now</button>
+            <button onClick={handleCheckout} disabled={loading} className={`w-full ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-500"} text-white py-4 sm:py-3 rounded font-semibold transition`}>{loading ? "Processing..." : "Pay Now"}</button>
         </div>
     );
 }

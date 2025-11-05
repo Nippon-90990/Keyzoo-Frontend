@@ -52,7 +52,7 @@ const platforms = [
         bg: 'bg-[#4e21be]',
         className: 'h-[75px]',
     },
-    
+
 ];
 
 export default function PlatformSlider() {
@@ -62,11 +62,17 @@ export default function PlatformSlider() {
             <Swiper
                 spaceBetween={20}
                 slidesPerView="auto"
+                centeredSlides={false}
                 modules={[Autoplay, Pagination, Navigation]}
                 autoplay={{
-                    delay: 2000,
+                    delay: 0, // No delay between transitions
                     disableOnInteraction: false,
                 }}
+                speed={2500} // Smooth continuous speed
+                loop={true} // Infinite loop
+                allowTouchMove={true}
+                freeMode={true} // Enables smooth continuous flow
+                grabCursor={true}
                 breakpoints={{
                     375: { slidesPerView: 2 },
                     768: { slidesPerView: 3 },

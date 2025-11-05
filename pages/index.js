@@ -1,7 +1,7 @@
 // pages/index.tsx or components/HomeHero.tsx
-import HeroSlider from '@/components/HeroSlider';
-import PromoBannerGrid from '@/components/PromoBannerGrid';
-import CategoryGrid from '@/components/CategoryGrid';
+// import HeroSlider from '@/components/HeroSlider';
+// import PromoBannerGrid from '@/components/PromoBannerGrid';
+// import CategoryGrid from '@/components/CategoryGrid';
 import ProductCarousel from '@/components/ProductCarousel';
 import PlatformSlider from '@/components/PlatformSlider';
 import DrifflePlusSection from '@/components/DrifflePlusSection';
@@ -10,20 +10,13 @@ import NewsletterSection from '@/components/NewsletterSection';
 import BeastSelling from '@/components/BeastSelling';
 import ProductGiftCardCarousel from '@/components/ProductGiftCardCarousel';
 import PromoBannerOne from '@/components/PromoBannerOne';
+import HomeBanner from '@/components/HomeBanner';
 
 const HomeHero = () => {
   return (
     <div className="px-4 md:px-10 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <HeroSlider />
-        </div>
-        <div className="hidden lg:block">
-          <PromoBannerGrid />
-          {/* <PromoBannerOne /> */}
-        </div>
-      </div>
-      <CategoryGrid />
+      <HomeBanner />
+      {/* <CategoryGrid /> */}
       <ProductCarousel />
       <PlatformSlider />
       <BeastSelling />
