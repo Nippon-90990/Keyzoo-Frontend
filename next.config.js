@@ -21,6 +21,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'active-reward-f841ad7084.strapiapp.com',
+            },
+            {
+                protocol: 'https',
                 hostname: 'playful-book-1c46d71b3d.media.strapiapp.com',
             },
             {
