@@ -24,8 +24,8 @@ export default function Header() {
             <Image
               src="/logo-white.png"
               alt="Logo"
-              width={36}
-              height={36}
+              width={120}
+              height={100}
             />
             <span className="font-bold text-lg text-white hidden sm:inline">
               
