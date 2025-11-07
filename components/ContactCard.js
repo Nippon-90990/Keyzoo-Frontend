@@ -86,48 +86,48 @@
 import React from "react";
 
 export default function ContactCard({ Icon, title, children, email }) {
-    return (
+  return (
+    <div
+      className="relative rounded-2xl border border-gray-800 bg-[#0f0f10] p-5 sm:p-6 md:p-8 transition-all duration-300 hover:scale-[1.02]"
+      style={{
+        boxShadow:
+          "0 12px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02)",
+      }}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+        {/* icon box */}
         <div
-            className="relative rounded-2xl border border-gray-800 bg-[#0f0f10] p-6"
-            style={{
-                /* outer soft shadow + subtle inner highlight to match the screenshot */
-                boxShadow:
-                    "0 12px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02)",
-            }}
+          className="mx-auto sm:mx-0 w-14 h-14 sm:w-12 sm:h-12 flex items-center justify-center rounded-md shrink-0"
+          style={{
+            background: "#141414",
+            border: "1px solid rgba(255,255,255,0.03)",
+            boxShadow: "inset 0 -6px 12px rgba(0,0,0,0.5)",
+          }}
         >
-            <div className="flex items-start gap-4">
-                {/* icon box */}
-                <div
-                    className="w-12 h-12 flex items-center justify-center rounded-md"
-                    style={{
-                        background: "#141414",
-                        border: "1px solid rgba(255,255,255,0.03)",
-                        boxShadow: "inset 0 -6px 12px rgba(0,0,0,0.5)",
-                    }}
-                >
-                    {Icon && <Icon className="w-5 h-5 text-gray-200" />}
-                </div>
-
-                {/* text area */}
-                <div className="flex-1">
-                    <h3 className="text-white font-semibold text-sm leading-snug">
-                        {title}
-                    </h3>
-
-                    <p className="text-gray-300 text-sm leading-relaxed mt-2 mb-3 max-w-[48ch]">
-                        {children}
-                    </p>
-
-                    {email && (
-                        <a
-                            href={`mailto:${email}`}
-                            className="text-blue-400 font-medium text-md hover:underline"
-                        >
-                            {email}
-                        </a>
-                    )}
-                </div>
-            </div>
+          {Icon && <Icon className="w-6 h-6 sm:w-5 sm:h-5 text-gray-200" />}
         </div>
-    );
+
+        {/* text area */}
+        <div className="flex-1">
+          <h3 className="text-white font-semibold text-base sm:text-sm leading-snug">
+            {title}
+          </h3>
+
+          <p className="text-gray-300 text-sm sm:text-xs leading-relaxed mt-2 mb-3 sm:mb-4 max-w-full sm:max-w-[48ch]">
+            {children}
+          </p>
+
+          {email && (
+            <a
+              href={`mailto:${email}`}
+              className="text-blue-400 font-medium text-sm sm:text-md hover:underline break-all"
+            >
+              {email}
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
+
