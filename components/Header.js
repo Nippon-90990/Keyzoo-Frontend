@@ -42,49 +42,55 @@ export default function Header() {
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-3 flex-none">
+        <div className="flex items-center gap-2 md:gap-3.5 flex-none">
           {/* Mobile Search Icon */}
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition"
+            className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition shrink-0"
             aria-label="Open search"
           >
             <Search className="h-5 w-5 text-white" />
           </button>
 
-          {/* Cart always visible and compact */}
-          <Link href="/cart" className="p-2 rounded-md hover:bg-neutral-800 transition relative" aria-label="View cart">
+          {/* Cart (compact) */}
+          <Link
+            href="/cart"
+            className="p-2 rounded-md hover:bg-neutral-800 transition relative shrink-0"
+            aria-label="View cart"
+          >
             <FaShoppingCart className="text-xl text-white" />
-            {/* optional badge */}
-            {/* <span className="absolute -top-1 -right-1 text-xs bg-red-600 rounded-full px-1">3</span> */}
           </Link>
 
-          {/* Auth area: reserve width only on md+ (avoid mobile gap) */}
-          <div className="flex items-center gap-2 md:min-w-[140px] justify-end">
+          {/* Auth area: shows buttons for public users, user menu for logged in */}
+          {/* Auth area */}
+          <div className="flex items-center gap-2 justify-end shrink-0">
             {user ? (
-              // logged in -> user menu (avatar + dropdown)
-              <UserMenu user={user} />
+              <UserMenu user={user}/>
             ) : (
               <>
-                {/* Desktop buttons */}
+                {/* Desktop: show text buttons */}
+                <div className="hidden sm:flex items-center gap-2">
+                  <Link
+                    href="/sign-in"
+                    aria-label="Sign in"
+                    className="px-4 py-2 rounded-md border border-neutral-700 text-sm text-white hover:bg-neutral-800 transition"
+                  >
+                    Sign In
+                  </Link>
+
+                  <Link
+                    href="/sign-up"
+                    aria-label="Sign up"
+                    className="px-4 py-2 rounded-md bg-purple-600 text-sm font-semibold text-white hover:bg-purple-700 transition"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+
+                {/* Mobile fallback: compact user icon */}
                 <Link
                   href="/sign-in"
-                  className="hidden sm:inline-block px-5 py-2.5 rounded-md border border-neutral-700 text-sm text-white hover:bg-neutral-800 transition"
-                >
-                  Sign In
-                </Link>
-
-                <Link
-                  href="/sign-up"
-                  className="hidden sm:inline-block px-5 py-2.5 rounded-md bg-purple-600 text-sm font-semibold text-white hover:bg-purple-700 transition"
-                >
-                  Sign Up
-                </Link>
-
-                {/* Mobile fallback: small user icon (keeps things compact) */}
-                <Link
-                  href="/sign-in"
-                  className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition"
+                  className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition shrink-0"
                   aria-label="Sign in"
                 >
                   <FaUserCircle className="text-xl text-white" />
@@ -93,16 +99,16 @@ export default function Header() {
             )}
           </div>
 
+
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsNavOpen(!isNavOpen)}
-            className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition"
+            className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition shrink-0"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5 text-white" />
           </button>
         </div>
-
 
       </div>
 

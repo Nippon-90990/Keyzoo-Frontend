@@ -29,7 +29,7 @@ export default function UserMenu() {
   return (
     <Popover className="relative">
       <PopoverButton className="text-2xl text-white focus:outline-none">
-        <FaUserCircle />
+        <FaUserCircle className="cursor-pointer"/>
       </PopoverButton>
 
       <PopoverPanel
