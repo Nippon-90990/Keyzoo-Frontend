@@ -12,7 +12,7 @@ export default function Header() {
   const { user } = useAuth();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  
+
 
   return (
     <header className="w-full shadow-sm border-b border-neutral-800 sticky top-0 z-50 bg-[#1e1e1e]">
@@ -28,7 +28,7 @@ export default function Header() {
               height={100}
             />
             <span className="font-bold text-lg text-white hidden sm:inline">
-              
+
             </span>
           </Link>
         </div>
@@ -42,44 +42,74 @@ export default function Header() {
         </div>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-none">
           {/* Mobile Search Icon */}
           <button
             onClick={() => setIsSearchOpen(true)}
             className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition"
+            aria-label="Open search"
           >
             <Search className="h-5 w-5 text-white" />
           </button>
 
-          {/* Cart */}
-          <Link href="/cart" className="p-2 rounded-md hover:bg-neutral-800 transition">
+          {/* Cart always visible and compact */}
+          <Link href="/cart" className="p-2 rounded-md hover:bg-neutral-800 transition relative" aria-label="View cart">
             <FaShoppingCart className="text-xl text-white" />
+            {/* optional badge */}
+            {/* <span className="absolute -top-1 -right-1 text-xs bg-red-600 rounded-full px-1">3</span> */}
           </Link>
 
-          {/* User */}
-          {user ? (
-            <UserMenu user={user} />
-          ) : (
-            <Link href="/sign-in" className="p-2 rounded-md hover:bg-neutral-800 transition">
-              <FaUserCircle className="text-xl text-white" />
-            </Link>
-          )}
+          {/* Auth area: reserve width only on md+ (avoid mobile gap) */}
+          <div className="flex items-center gap-2 md:min-w-[140px] justify-end">
+            {user ? (
+              // logged in -> user menu (avatar + dropdown)
+              <UserMenu user={user} />
+            ) : (
+              <>
+                {/* Desktop buttons */}
+                <Link
+                  href="/sign-in"
+                  className="hidden sm:inline-block px-5 py-2.5 rounded-md border border-neutral-700 text-sm text-white hover:bg-neutral-800 transition"
+                >
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/sign-up"
+                  className="hidden sm:inline-block px-5 py-2.5 rounded-md bg-purple-600 text-sm font-semibold text-white hover:bg-purple-700 transition"
+                >
+                  Sign Up
+                </Link>
+
+                {/* Mobile fallback: small user icon (keeps things compact) */}
+                <Link
+                  href="/sign-in"
+                  className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition"
+                  aria-label="Sign in"
+                >
+                  <FaUserCircle className="text-xl text-white" />
+                </Link>
+              </>
+            )}
+          </div>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsNavOpen(!isNavOpen)}
             className="md:hidden p-2 rounded-md hover:bg-neutral-800 transition"
+            aria-label="Open menu"
           >
             <Menu className="h-5 w-5 text-white" />
           </button>
         </div>
+
+
       </div>
 
       {/* Bottom Navigation */}
       <nav
-        className={`bg-neutral-900 text-white px-4 py-2 flex items-center gap-5 text-sm font-medium overflow-x-auto transition-all duration-300 ${
-          isNavOpen ? "block" : "hidden md:flex"
-        }`}
+        className={`bg-neutral-900 text-white px-4 py-2 flex items-center gap-5 text-sm font-medium overflow-x-auto transition-all duration-300 ${isNavOpen ? "block" : "hidden md:flex"
+          }`}
       >
         <Link href="/store" className="whitespace-nowrap">
           Store
