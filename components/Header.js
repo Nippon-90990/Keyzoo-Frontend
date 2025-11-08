@@ -34,10 +34,10 @@ export default function Header() {
         </div>
 
         {/* Center: Search (Desktop only) */}
-        <div className="hidden md:flex flex-1 max-w-3xl mx-4">
+        <div className="hidden md:flex flex-1 max-w-6xl mx-auto px-4">
           <div className="relative w-full">
             <LiveSearch isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-black" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-black" />
           </div>
         </div>
 

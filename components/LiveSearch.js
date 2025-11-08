@@ -123,7 +123,7 @@ export default function LiveSearch({ isSearchOpen, setIsSearchOpen }) {
                     onFocus={() => {
                         if (query) setShowResults(true);
                     }}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-md bg-white text-black placeholder-gray-500 focus:outline-none"
+                    className="w-full pl-10 pr-4 py-3 rounded-md bg-white text-black placeholder-gray-500 focus:outline-none"
                 />
 
                 {showResults && (
