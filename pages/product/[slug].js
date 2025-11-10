@@ -942,19 +942,19 @@ export default function ProductPage({ product }) {
             {product.Available ? (<button onClick={handleAddToCart} className="cursor-pointer bg-neutral-800 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
               <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
             </button>) :
-            (<button disabled className="select-none cursor-not-allowed bg-gray-400 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
-              <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
-            </button>)}
+              (<button disabled className="select-none cursor-not-allowed bg-gray-400 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
+                <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
+              </button>)}
 
             {/* Buy Now full-width button */}
             {product.Available ? (<button className="cursor-pointer flex items-center justify-center gap-2 bg-[#814DE5] hover:bg-[#6C34D8] transition-colors text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
               <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
               Buy now
             </button>) :
-            (<button disabled className="select-none cursor-not-allowed flex items-center justify-center gap-2 bg-gray-400 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
-              <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
-              Buy now
-            </button>)}
+              (<button disabled className="select-none cursor-not-allowed flex items-center justify-center gap-2 bg-gray-400 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
+                <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
+                Buy now
+              </button>)}
           </div>
 
           {/* Explore Plus */}
@@ -968,7 +968,11 @@ export default function ProductPage({ product }) {
             {/* Instant Delivery */}
             <div className="bg-neutral-800 px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
               <div className="">
-                <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" />
+                {/* <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" /> */}
+                <svg className="w-6 h-6 text-blue-500 fill-current">
+                  <use xlinkHref="/sprit/icons.svg#thunder"></use>
+                </svg>
+
               </div>
               <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
             </div>
@@ -976,7 +980,10 @@ export default function ProductPage({ product }) {
             {/* 24/7 Support */}
             <div className="bg-neutral-800 px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
               <div className="">
-                <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" />
+                {/* <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" /> */}
+                <svg className="w-6 h-6 text-[#1cc54c] fill-current">
+                  <use xlinkHref="/sprit/icons.svg#support-agent"></use>
+                </svg>
               </div>
               <span className="text-xs lg:text-sm text-white">24/7 Support</span>
             </div>
@@ -984,7 +991,10 @@ export default function ProductPage({ product }) {
             {/* Verified Sellers */}
             <div className="bg-neutral-800 px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
               <div className="">
-                <MdVerified className="text-xl lg:text-3xl text-[#359dff]" />
+                {/* <MdVerified className="text-xl lg:text-3xl text-[#359dff]" /> */}
+                <svg className="w-6 h-6">
+                  <use xlinkHref="/sprit/icons.svg#verified-filled"></use>
+                </svg>
               </div>
               <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
             </div>

@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { loadCart } from "@/store/cartSlice";
 import Maintenance from '@/components/Maintenance';
 import { AuthProvider } from '@/context/AuthContext';
+import PageLoader from "@/components/PageLoader";
 
 
 // Optional: Configure NProgress
@@ -50,6 +51,22 @@ export default function MyApp({ Component, pageProps }) {
 
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
+
+  useEffect(() => {
+    const handleStart = () => setPageLoading(true);
+    const handleStop = () => setPageLoading(false);
+
+    Router.events.on("routeChangeStart", handleStart);
+    Router.events.on("routeChangeComplete", handleStop);
+    Router.events.on("routeChangeError", handleStop);
+
+    return () => {
+      Router.events.off("routeChangeStart", handleStart);
+      Router.events.off("routeChangeComplete", handleStop);
+      Router.events.off("routeChangeError", handleStop);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchMaintenanceStatus = async () => {
@@ -108,7 +125,7 @@ export default function MyApp({ Component, pageProps }) {
         <AuthProvider>
           <Provider store={store}>
             <CartLoader>
-              {/* <SyncUser /> */}
+              {pageLoading && <PageLoader />}
               <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-grow">

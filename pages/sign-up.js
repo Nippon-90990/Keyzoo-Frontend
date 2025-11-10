@@ -1,11 +1,11 @@
-// pages/sign-up.js
-import { React, useState } from 'react';
-import { useRouter } from 'next/router';
-import PasswordInput from '@/components/PasswordInput';
-import Image from 'next/image';
+import { React, useState } from "react";
+import { useRouter } from "next/router";
+import PasswordInput from "@/components/PasswordInput";
+import Image from "next/image";
+import LoadingButton from "@/components/LoadingButton";
+import Link from "next/link";
 
 export default function SignUpPage() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,29 +20,22 @@ export default function SignUpPage() {
     setError("");
     setSuccess("");
 
-    // ✅ Confirm password validation
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
-    setLoading(true);
-
     try {
       const res = await fetch(
-        // "https://playful-book-1c46d71b3d.strapiapp.com/api/auth/local/register",
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}api/auth/local/register`, // Ensure this is the correct URL for your Strapi API
+        `${process.env.NEXT_PUBLIC_STRAPI_URL}api/auth/local/register`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            username: email.split("@")[0], // Strapi requires a username
+            username: email.split("@")[0],
             email,
             password,
-            // dob, // this will only work if your Strapi user model has a dob field
           }),
         }
       );
@@ -51,10 +44,7 @@ export default function SignUpPage() {
 
       if (res.ok) {
         setSuccess("Account created successfully!");
-        console.log("User Data:", data);
-        setTimeout(() => {
-          router.push("/"); // Redirect to homepage
-        }, 1000);
+        setTimeout(() => router.push("/sign-in"), 1000);
       } else {
         setError(data?.error?.message || "Registration failed");
       }
@@ -66,85 +56,150 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center text-white">
-      <div className="flex w-full max-w-4xl rounded-lg overflow-hidden shadow-lg">
-        {/* Left: Form */}
-        <div className="w-full md:w-1/2 bg-neutral-900 p-8 flex flex-col gap-6">
-          <h2 className="text-2xl font-bold">Create your account</h2>
+    <div className="flex min-h-screen items-center justify-center bg-[#0f0f0f] text-white px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-0">
+      <div className="flex flex-col md:flex-row w-full max-w-5xl rounded-2xl overflow-hidden border border-neutral-800 shadow-lg shadow-black/30">
+        {/* Left: Form Section */}
+        <div className="w-full md:w-1/2 bg-[#1a1a1a] p-6 sm:p-8 flex flex-col justify-center gap-6 overflow-y-auto md:overflow-visible pb-10 md:pb-6">
+          <h2 className="text-3xl font-bold text-center md:text-left">
+            Create your account ✨
+          </h2>
 
-          <button
-            className="flex items-center justify-center gap-2 bg-neutral-800 outline-none w-full py-3 rounded hover:bg-white text-white hover:text-black transition"
-          >
-            <img src="https://driffle.com/icons/google-icon.svg" alt="Google" className="w-5 h-5" />
-            Sign up with Google
-          </button>
-          <button
-            className="flex items-center justify-center gap-2 bg-neutral-800 outline-none w-full py-3 rounded hover:bg-white text-white hover:text-black transition"
-          >
-            <img src="https://driffle.com/icons/facebook-round-icon.svg" alt="Facebook" className="w-5 h-5" />
-            Sign up with Facebook
-          </button>
-          <button
-            className="flex items-center justify-center gap-2 bg-neutral-800 outline-none w-full py-3 rounded hover:bg-white text-white hover:text-black transition"
-          >
-            <img src="https://driffle.com/icons/discord-icon-new.svg" alt="Discord" className="w-5 h-5" />
-            Sign up with Discord
-          </button>
+          {/* Social Buttons */}
+          <div className="space-y-3">
+            {/* Google */}
+            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+              <img
+                src="https://driffle.com/icons/google-icon.svg"
+                alt="Google"
+                className="w-5 h-5"
+              />
+              Sign up with Google
+            </button>
 
+            {/* Facebook */}
+            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+              <img
+                src="https://driffle.com/icons/facebook-round-icon.svg"
+                alt="Facebook"
+                className="w-5 h-5"
+              />
+              Sign up with Facebook
+            </button>
+
+            {/* Discord */}
+            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+              <img
+                src="https://driffle.com/icons/discord-icon-new.svg"
+                alt="Discord"
+                className="w-5 h-5"
+              />
+              Sign up with Discord
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center my-4">
+            <div className="flex-1 h-px bg-neutral-700" />
+            <span className="px-3 text-neutral-400 text-sm">or</span>
+            <div className="flex-1 h-px bg-neutral-700" />
+          </div>
+
+          {/* Form */}
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
-              <label className="text-sm">Email</label>
+              <label className="text-sm text-neutral-400">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full mt-1 px-4 py-3 bg-neutral-800 rounded text-white outline-none"
-                placeholder="Enter your Email"
+                className="w-full mt-1 px-4 py-3 bg-neutral-800 rounded-md text-white outline-none focus:ring-2 focus:ring-purple-500 transition"
+                placeholder="Enter your email"
               />
             </div>
 
             <div>
-              <label className="text-sm">Password</label>
+              <label className="text-sm text-neutral-400">Password</label>
               <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your Password"
+                placeholder="Enter your password"
               />
             </div>
 
             <div>
-              <label className="text-sm">Confirm Password</label>
+              <label className="text-sm text-neutral-400">Confirm Password</label>
               <PasswordInput
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your Password"
+                placeholder="Confirm your password"
               />
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-500 text-sm">{success}</p>}
 
-            <button
+            {/* <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded font-semibold mt-5"
+              disabled={loading}
+              className={`w-full py-3 rounded-md font-semibold text-white text-sm flex items-center justify-center gap-2 transition-all ${loading
+                  ? "bg-gradient-to-r from-purple-700 to-blue-600 opacity-70 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-90 shadow-md shadow-purple-500/20"
+                }`}
             >
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              )}
+              <span className={`${loading ? "opacity-90" : "opacity-100"} transition-opacity`}>
+                {loading ? "Signing up..." : "Sign Up"}
+              </span>
+            </button> */}
+
+            <LoadingButton type="submit" loading={loading}>
               {loading ? "Signing up..." : "Sign Up"}
-            </button>
+            </LoadingButton>
+
+
           </form>
 
-          <div className="text-sm text-neutral-400">
-            Already have an account?{" "}
-            <a href="/sign-in" className="hover:underline">
-              Login
+          {/* Footer Link */}
+          <div className="text-sm text-neutral-400 mt-4 text-center md:text-left">
+            
+            <a href="/sign-in" className="hover:text-purple-400 transition font-medium">
+              Already have an account? Login
             </a>
           </div>
         </div>
 
         {/* Right: Illustration */}
-        <div className="hidden md:flex w-1/2 bg-neutral-800 items-center justify-center">
-          {/* <img src="https://driffle.com/_next/image?url=https%3A%2F%2Fstatic.driffle.com%2Fimages%2Fgirl-using-phone.png&w=828&q=75" alt="Illustration" className="w-3/4" /> */}
-          <Image src={"/3d/register.png"} height={512} width={512}/>
+        <div className="hidden md:flex w-1/2 bg-[#121212] items-center justify-center p-6">
+          <Image
+            src="/3d/register.png"
+            alt="Register Illustration"
+            width={450}
+            height={450}
+            className="object-contain"
+            priority
+          />
         </div>
       </div>
     </div>
