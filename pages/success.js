@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { clearCart } from "@/store/cartSlice";
 import { useRouter } from "next/router";
 import { IoCheckmarkDone } from "react-icons/io5";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import confetti from "canvas-confetti";
 
 export default function SuccessPage() {
+    
+    const dispatch = useDispatch();
     const router = useRouter();
     const { session_id } = router.query;
     const [loading, setLoading] = useState(true);
     const [order, setOrder] = useState(null);
+
+    useEffect(() => {
+        dispatch(clearCart());
+    }, [dispatch]);
 
     useEffect(() => {
         if (!session_id) return;
