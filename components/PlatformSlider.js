@@ -2,6 +2,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 const platforms = [
     {
@@ -56,6 +58,41 @@ const platforms = [
 ];
 
 export default function PlatformSlider() {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulate loading 0.8–1 sec
+        const timeout = setTimeout(() => setLoading(false), 800);
+        return () => clearTimeout(timeout);
+    }, []);
+
+    // ⭐ Skeleton Loader
+    if (loading) {
+        return (
+            <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                <div className="my-6">
+                    <h2 className="text-xl font-bold mb-4 dark:text-white">
+                        Explore By Platforms
+                    </h2>
+
+                    <div className="flex gap-4 overflow-hidden no-scrollbar">
+                        {Array(6)
+                            .fill(0)
+                            .map((_, i) => (
+                                <Skeleton
+                                    key={i}
+                                    height={200}
+                                    width={298}
+                                    borderRadius={16}
+                                    className="rounded-xl"
+                                />
+                            ))}
+                    </div>
+                </div>
+            </SkeletonTheme>
+        );
+    }
+
     return (
         <div className="my-6">
             <h2 className="text-xl font-bold mb-4 dark:text-white">Explore By Platforms</h2>

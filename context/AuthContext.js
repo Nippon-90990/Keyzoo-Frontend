@@ -50,6 +50,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [jwt, setJwt] = useState(null);
+    const [loading, setLoading] = useState(true); // ⭐ NEW
 
     useEffect(() => {
         const savedUser = localStorage.getItem("user");
@@ -58,6 +59,10 @@ export const AuthProvider = ({ children }) => {
             setUser(JSON.parse(savedUser));
             setJwt(savedJwt);
         }
+        // ⭐ Add small delay to prevent skeleton flicker
+        const timer = setTimeout(() => setLoading(false), 800);
+
+        return () => clearTimeout(timer);
     }, []);
 
     const login = (userData, token) => {
@@ -75,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, jwt, login, logout }}>
+        <AuthContext.Provider value={{ user, jwt, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

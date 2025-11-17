@@ -166,12 +166,50 @@ import { useAuth } from "@/context/AuthContext";
 import UserMenu from "./UserMenu";
 import LiveSearch from "./LiveSearch";
 import AccountOverlayMenu from "@/components/AccountOverlayMenu";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+const HeaderSkeleton = () => (
+  <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    <header className="w-full shadow-sm border-b border-neutral-800 sticky top-0 z-50 bg-[#1e1e1e]">
+      <div className="px-4 py-3 flex items-center justify-between min-h-[72px] gap-3">
+
+        {/* Logo */}
+        <Skeleton width={120} height={40} />
+
+        {/* Search bar (desktop) */}
+        <div className="hidden md:block w-full max-w-lg mx-4">
+          <Skeleton height={42} borderRadius={8} />
+        </div>
+
+        {/* Right icons */}
+        <div className="flex items-center gap-3">
+          <Skeleton circle width={36} height={36} />
+          <Skeleton circle width={36} height={36} />
+          <Skeleton circle width={36} height={36} />
+        </div>
+      </div>
+
+      {/* Nav Skeleton */}
+      <nav className="bg-neutral-900 px-4 py-3 flex gap-5">
+        <Skeleton width={60} />
+        <Skeleton width={80} />
+        <Skeleton width={70} />
+        <Skeleton width={90} />
+      </nav>
+    </header>
+  </SkeletonTheme>
+);
+
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+
+  // ⭐ Show skeleton while loading AuthContext
+  if (loading) return <HeaderSkeleton />;
 
   return (
     <header className="w-full shadow-sm border-b border-neutral-800 sticky top-0 z-50 bg-[#1e1e1e]">
