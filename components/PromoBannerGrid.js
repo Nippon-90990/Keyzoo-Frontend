@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useIsMobile } from '@/hook/useIsMobile';
+import Skeleton from 'react-loading-skeleton';
 
 export default function CategoryGrid() {
   const [categoriesBanner, setCategoriesBanner] = useState([]);
@@ -27,6 +28,19 @@ export default function CategoryGrid() {
     if (url.startsWith('http')) return url;
     return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
   };
+
+  if (!categoriesBanner.length) {
+    return (
+      // <SkeletonTheme baseColor="#202020" highlightColor="#444">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Skeleton height={210} borderRadius={16} />
+          <Skeleton height={210} borderRadius={16} />
+          <Skeleton height={210} borderRadius={16} />
+        </div>
+      // </SkeletonTheme>
+    );
+  }
+
 
   return (
     <section className="mt-2">

@@ -15,6 +15,8 @@ import { loadCart } from "@/store/cartSlice";
 import Maintenance from '@/components/Maintenance';
 import { AuthProvider } from '@/context/AuthContext';
 import PageLoader from "@/components/PageLoader";
+import 'react-loading-skeleton/dist/skeleton.css';
+import { SkeletonTheme } from 'react-loading-skeleton';
 
 
 // Optional: Configure NProgress
@@ -126,14 +128,16 @@ export default function MyApp({ Component, pageProps }) {
           <Provider store={store}>
             <CartLoader>
               {pageLoading && <PageLoader />}
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <main className="flex-grow">
-                  <Component {...pageProps} />
-                  <Toaster position="top-right" />
-                </main>
-                <Footer />
-              </div>
+              <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main className="flex-grow">
+                    <Component {...pageProps} />
+                    <Toaster position="top-right" />
+                  </main>
+                  <Footer />
+                </div>
+              </SkeletonTheme>
             </CartLoader>
           </Provider>
         </AuthProvider>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { fetchFromStrapi } from '@/lib/strapi';
+import Skeleton from 'react-loading-skeleton';
 
 const GameBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -21,6 +22,14 @@ const GameBanner = () => {
   }, []);
 
   //   const linkUrl = attributes.link?.startsWith('http') ? attributes.link : `https://${attributes.link}`;
+
+  if (!banners.length) {
+    return (
+      // <SkeletonTheme baseColor="#202020" highlightColor="#444">
+        <Skeleton height={280} borderRadius={16} />
+      // </SkeletonTheme>
+    );
+  }
 
 
   return (

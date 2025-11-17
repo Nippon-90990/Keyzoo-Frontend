@@ -44,8 +44,8 @@ const nextConfig = {
                 hostname: 'driffle.com',
             },
             {
-                protocol: 'http',   // Use http for local development or specific vps server
-                hostname: 'localhost',
+                protocol: 'https',   // Use http for local development or specific vps server
+                hostname: 'database.keyzoo.shop',
             },
             {
                 protocol: 'https',   // Use http for local development or specific vps server

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { fetchFromStrapi } from '@/lib/strapi';
+import Skeleton from 'react-loading-skeleton';
 
 const CategoryGrid = () => {
   const [banners, setBanners] = useState([]);
@@ -22,6 +23,13 @@ const CategoryGrid = () => {
 
   //   const linkUrl = attributes.link?.startsWith('http') ? attributes.link : `https://${attributes.link}`;
 
+  if (!banners.length) {
+      return (
+        // <SkeletonTheme baseColor="#202020" highlightColor="#444">
+          <Skeleton height={210} borderRadius={16} />
+        // </SkeletonTheme>
+      );
+    }
 
   return (
     <div>
@@ -32,10 +40,8 @@ const CategoryGrid = () => {
           return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
         };
 
-
         const imgUrl = getStrapiMedia(item.image?.url);
         const linkHref = item.subtitle && item.subtitle.trim() !== '' ? item.subtitle : '#';
-
 
         return (
           <div className="flex flex-col gap-4.5">

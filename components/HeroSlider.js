@@ -11,6 +11,7 @@ import 'swiper/css/navigation';
 
 import { fetchFromStrapi } from '@/lib/strapi';
 import Link from 'next/link';
+import Skeleton from 'react-loading-skeleton';
 
 const HeroSlider = () => {
   const [banners, setBanners] = useState([]);
@@ -23,6 +24,16 @@ const HeroSlider = () => {
 
     getBanners();
   }, []);
+
+  if (!banners.length) {
+    return (
+      // <SkeletonTheme baseColor="#202020" highlightColor="#444">
+        <div className="rounded-2xl overflow-hidden">
+          <Skeleton height={500} borderRadius={16} />
+        </div>
+      // </SkeletonTheme>
+    );
+  }
 
   return (
     <>
@@ -113,28 +124,28 @@ const HeroSlider = () => {
                 className="rounded-2xl overflow-hidden"
               >
                 {/* {slides.map((slide) => ( */}
-                  <SwiperSlide key={banner.id}>
-                    <div className="relative h-[250px] sm:h-[320px] md:h-[400px] lg:h-[500px] w-full">
-                      <Image
-                        src={imgUrl}
-                        alt={banner.title}
-                        fill
-                        className="object-center"
-                        priority
-                      />
-                      <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center px-6">
-                        <h2 className="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
-                          {banner.title}
-                        </h2>
-                        {/* <p className="text-xl font-semibold bg-[#ff4e00] px-5 py-2 rounded-md inline-block mb-4">
+                <SwiperSlide key={banner.id}>
+                  <div className="relative h-[250px] sm:h-[320px] md:h-[400px] lg:h-[500px] w-full">
+                    <Image
+                      src={imgUrl}
+                      alt={banner.title}
+                      fill
+                      className="object-center"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center px-6">
+                      <h2 className="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
+                        {banner.title}
+                      </h2>
+                      {/* <p className="text-xl font-semibold bg-[#ff4e00] px-5 py-2 rounded-md inline-block mb-4">
                           {banner.subtitle}
                         </p> */}
-                        {/* <button className="bg-white text-black font-semibold px-8 py-2.5 rounded-lg hover:bg-gray-200 transition">
+                      {/* <button className="bg-white text-black font-semibold px-8 py-2.5 rounded-lg hover:bg-gray-200 transition">
                           {banner.button}
                         </button> */}
-                      </div>
                     </div>
-                  </SwiperSlide>
+                  </div>
+                </SwiperSlide>
                 {/* ))} */}
               </Swiper>
             </div>
