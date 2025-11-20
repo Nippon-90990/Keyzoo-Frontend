@@ -1,8 +1,48 @@
 // components/DrifflePlusSection.js
 import { CircleCheckBig } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+const DrifflePlusSkeleton = () => (
+  <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    <section className="w-full flex flex-col md:flex-row min-h-[450px] gap-3">
+
+      {/* LEFT FULL BOX SKELETON */}
+      <div className="w-full md:w-1/2 p-8 rounded-3xl bg-[#202020]">
+        <Skeleton height={40} width="80%" />
+        <Skeleton height={35} width="60%" className="mt-4" />
+        <Skeleton height={48} width={150} className="mt-6 rounded-md" />
+      </div>
+
+      {/* RIGHT FULL BOX SKELETON */}
+      <div className="w-full md:w-1/2 p-8 rounded-3xl bg-[#202020]">
+        <Skeleton height={32} width="70%" />
+
+        <div className="mt-6 space-y-4">
+          <Skeleton height={20} width="90%" />
+          <Skeleton height={20} width="95%" />
+          <Skeleton height={20} width="85%" />
+          <Skeleton height={20} width="70%" />
+        </div>
+      </div>
+
+    </section>
+  </SkeletonTheme>
+);
 
 export default function DrifflePlusSection() {
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 800); // smooth premium delay
+    return () => clearTimeout(t);
+  }, []);
+
+  if (loading) return <DrifflePlusSkeleton />;
+
   return (
     <section className="w-full flex flex-col md:flex-row min-h-[450px] text-white">
       {/* Left: Join now section */}
