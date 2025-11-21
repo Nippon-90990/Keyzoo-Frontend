@@ -17,6 +17,14 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
+                hostname: 'wise-peace-adfa09b55e.media.strapiapp.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'wise-peace-adfa09b55e.strapiapp.com',
+            },
+            {
+                protocol: 'https',
                 hostname: 'active-reward-f841ad7084.media.strapiapp.com',
             },
             {
