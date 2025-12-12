@@ -1,19 +1,23 @@
 import PasswordInput from "@/components/PasswordInput";
-import { React, useState } from "react";
+import { React, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import LoadingButton from "@/components/LoadingButton";
+import Turnstile from "react-turnstile"; // Note: Turnstile is imported but not used in this code.
 
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [captchaKey, setCaptchaKey] = useState(Date.now());
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const { login } = useAuth();
+  const turnstileRef = useRef(null);
 
 
   const handleLogin = async (e) => {
@@ -22,13 +26,21 @@ export default function SignInPage() {
     setLoading(true);
     setSuccess("");
 
+    if (!turnstileToken) {
+      setError("Please complete the security check");
+      setLoading(false);
+      return;
+    }
+
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/auth/local`, {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           identifier: email,
           password: password,
+          turnstileToken,
         }),
       });
 
@@ -47,9 +59,19 @@ export default function SignInPage() {
         }, 600);
       } else {
         setError(data.error?.message || "Login failed");
+
+        // ⭐ AUTO-RESET TURNSTILE
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
+        setCaptchaKey(Date.now());  // ⭐ Force re-render
       }
     } catch (err) {
       setError("Something went wrong");
+
+      // ⭐ AUTO-RESET TURNSTILE
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
+      setCaptchaKey(Date.now());  // ⭐ Force re-render
     } finally {
       setLoading(false);
     }
@@ -136,6 +158,13 @@ export default function SignInPage() {
             >
               {loading ? "Logging in..." : "Login"}
             </button> */}
+            <Turnstile
+              key={captchaKey}
+              ref={turnstileRef}
+              sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+              onVerify={(token) => setTurnstileToken(token)}
+            />
+
             <LoadingButton type="submit" loading={loading}>
               {loading ? "Logging in..." : "Login"}
             </LoadingButton>

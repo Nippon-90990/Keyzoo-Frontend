@@ -48,6 +48,10 @@ const nextConfig = {
                 hostname: 'static.driffle.com',
             },
             {
+                protocol: 'http',
+                hostname: 'localhost',
+            },
+            {
                 protocol: 'https',
                 hostname: 'driffle.com',
             },

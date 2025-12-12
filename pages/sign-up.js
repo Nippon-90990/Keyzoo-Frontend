@@ -1,18 +1,22 @@
-import { React, useState } from "react";
+import { React, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import PasswordInput from "@/components/PasswordInput";
 import Image from "next/image";
 import LoadingButton from "@/components/LoadingButton";
 import Link from "next/link";
+import Turnstile from "react-turnstile";  // Import Turnstile component
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState(""); // State for Turnstile token
+  const [captchaKey, setCaptchaKey] = useState(Date.now()); // ⭐ NEW: Key to force re-render
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const router = useRouter();
+  const turnstileRef = useRef(null); // ⭐ NEW: Ref for Turnstile
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,18 +30,23 @@ export default function SignUpPage() {
       return;
     }
 
+    if (!turnstileToken) {
+      setError("Please complete the security check");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}api/auth/local/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: email.split("@")[0],
-            email,
-            password,
-          }),
-        }
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: email.split("@")[0],
+          email,
+          password,
+          turnstileToken,
+        }),
+      }
       );
 
       const data = await res.json();
@@ -47,9 +56,19 @@ export default function SignUpPage() {
         setTimeout(() => router.push("/sign-in"), 1000);
       } else {
         setError(data?.error?.message || "Registration failed");
+
+        // ⭐ AUTO-RESET TURNSTILE
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
+        setCaptchaKey(Date.now());
+
       }
     } catch (err) {
       setError("Something went wrong");
+      // ⭐ AUTO-RESET TURNSTILE
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
+      setCaptchaKey(Date.now());
     } finally {
       setLoading(false);
     }
@@ -174,6 +193,15 @@ export default function SignUpPage() {
               </span>
             </button> */}
 
+            <Turnstile
+              key={captchaKey}
+              ref={turnstileRef}
+              sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+              onVerify={(token) => setTurnstileToken(token)}
+              className="mt-2"
+            />
+
+
             <LoadingButton type="submit" loading={loading}>
               {loading ? "Signing up..." : "Sign Up"}
             </LoadingButton>
@@ -183,7 +211,7 @@ export default function SignUpPage() {
 
           {/* Footer Link */}
           <div className="text-sm text-neutral-400 mt-4 text-center md:text-left">
-            
+
             <a href="/sign-in" className="hover:text-purple-400 transition font-medium">
               Already have an account? Login
             </a>
