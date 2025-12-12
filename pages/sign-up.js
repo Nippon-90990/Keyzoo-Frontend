@@ -5,6 +5,7 @@ import Image from "next/image";
 import LoadingButton from "@/components/LoadingButton";
 import Link from "next/link";
 import Turnstile from "react-turnstile";  // Import Turnstile component
+import { signIn } from "next-auth/react";  // Import signIn from next-auth
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
@@ -84,37 +85,60 @@ export default function SignUpPage() {
           </h2>
 
           {/* Social Buttons */}
-          <div className="space-y-3">
+          {/* <div className="space-y-3">
             {/* Google */}
-            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+          {/* <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
               <img
                 src="https://driffle.com/icons/google-icon.svg"
                 alt="Google"
                 className="w-5 h-5"
               />
               Sign up with Google
-            </button>
+            </button> */}
 
-            {/* Facebook */}
-            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+          {/* Facebook */}
+          {/* <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
               <img
                 src="https://driffle.com/icons/facebook-round-icon.svg"
                 alt="Facebook"
                 className="w-5 h-5"
               />
               Sign up with Facebook
-            </button>
+            </button> */}
 
-            {/* Discord */}
-            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+          {/* Discord */}
+          {/* <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
               <img
                 src="https://driffle.com/icons/discord-icon-new.svg"
                 alt="Discord"
                 className="w-5 h-5"
               />
               Sign up with Discord
+            </button> */}
+          {/* </div> */}
+
+          <div className="space-y-3">
+
+            <button
+              onClick={() => signIn("google", { callbackUrl: "/" })}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium"
+            >
+              <img src="https://driffle.com/icons/google-icon.svg" className="w-5 h-5" />
+              Sign up with Google
             </button>
+
+            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+              <img src="https://driffle.com/icons/facebook-round-icon.svg" className="w-5 h-5" />
+              Sign up with Facebook
+            </button>
+
+            <button className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium">
+              <img src="https://driffle.com/icons/discord-icon-new.svg" className="w-5 h-5" />
+              Sign up with Discord
+            </button>
+
           </div>
+
 
           {/* Divider */}
           <div className="flex items-center my-4">
