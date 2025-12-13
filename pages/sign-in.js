@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import LoadingButton from "@/components/LoadingButton";
 import Turnstile from "react-turnstile"; // Note: Turnstile is imported but not used in this code.
-import { signIn } from "next-auth/react";
+// import { signIn } from "next-auth/react";
 
 
 export default function SignInPage() {
@@ -89,7 +89,7 @@ export default function SignInPage() {
 
           {/* Social Buttons */}
           <div className="space-y-3">
-            {/* {[
+            {[
               {
                 src: "https://driffle.com/icons/google-icon.svg",
                 text: "Continue with Google",
@@ -110,14 +110,14 @@ export default function SignInPage() {
                 <img src={btn.src} alt={btn.text} className="w-5 h-5" />
                 {btn.text}
               </button>
-            ))} */}
-            <button
+            ))}
+            {/* <button
               onClick={() => signIn("google", { callbackUrl: "/" })}
               className="flex items-center justify-center gap-2 w-full py-3 rounded-md bg-neutral-800 hover:bg-white hover:text-black transition-all duration-300 text-sm font-medium"
             >
               <img src="https://driffle.com/icons/google-icon.svg" className="w-5 h-5" />
               Continue with Google
-            </button>
+            </button> */}
           </div>
 
           {/* Divider */}
