@@ -44,7 +44,7 @@
 
 // context/AuthContext.js
 import { createContext, useState, useEffect, useContext } from "react";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 
 const AuthContext = createContext();
 
@@ -67,17 +67,17 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // ⭐ NEXTAUTH GOOGLE LOGIN SESSION SYNC
-    const { data: session, status } = useSession();
+    // const { data: session, status } = useSession();
 
-    useEffect(() => {
-        if (status === "authenticated" && session?.jwt) {
-            localStorage.setItem("jwt", session.jwt);
-            localStorage.setItem("user", JSON.stringify(session.user));
+    // useEffect(() => {
+    //     if (status === "authenticated" && session?.jwt) {
+    //         localStorage.setItem("jwt", session.jwt);
+    //         localStorage.setItem("user", JSON.stringify(session.user));
 
-            setUser(session.user);
-            setJwt(session.jwt);
-        }
-    }, [status, session]);
+    //         setUser(session.user);
+    //         setJwt(session.jwt);
+    //     }
+    // }, [status, session]);
 
     const login = (userData, token) => {
         setUser(userData);

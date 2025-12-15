@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import { loadCart } from "@/store/cartSlice";
 import Maintenance from '@/components/Maintenance';
 import { AuthProvider } from '@/context/AuthContext';
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import 'react-loading-skeleton/dist/skeleton.css';
 import { SkeletonTheme } from 'react-loading-skeleton';
@@ -50,7 +50,7 @@ function CartLoader({ children }) {
 }
 
 
-export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
+export default function MyApp({ Component, pageProps }) {
 
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -125,7 +125,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
         <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet" />
       </Head>
       <ThemeProvider attribute="class">
-        <SessionProvider session={session}>
+        {/* <SessionProvider session={session}> */}
         <AuthProvider>
           <Provider store={store}>
             <CartLoader>
@@ -143,7 +143,7 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
             </CartLoader>
           </Provider>
         </AuthProvider>
-        </SessionProvider>
+        {/* </SessionProvider> */}
       </ThemeProvider>
     </>
   );
