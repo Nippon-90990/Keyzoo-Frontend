@@ -25,7 +25,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from "swiper/modules"; // ✅ import Navigation
 import "swiper/css/navigation"; // ✅ import navigation styles
 import { platformIcons } from "@/lib/platformIcons";
-
+import Tooltip from "@/components/Tooltip";
 
 // export async function getServerSideProps({ params }) {
 //   const { slug } = params;
@@ -432,7 +432,7 @@ export default function ProductPage({ product }) {
           </div>
 
           {/* Explore Plus */}
-          <div className="bg-[#1e1e1e] rounded-xl p-3 flex items-center gap-2 mt-5 mb-5">
+          <div className="bg-[#1d1d1d] rounded-xl p-3 flex items-center gap-2 mt-5 mb-5">
             <div className="border border-purple-600 px-2 py-0.5 rounded text-purple-400 text-xs lg:text-sm font-medium">plus</div>
             <p className="text-xs lg:text-sm text-white font-medium">Explore Plus Benefits</p>
           </div>
@@ -440,7 +440,8 @@ export default function ProductPage({ product }) {
           {/* Feature Boxes */}
           <div className="grid grid-cols-3 gap-0 mt-3">
             {/* Instant Delivery */}
-            <div className="bg-neutral-800 px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
+            <Tooltip text="Product code will be delivered instantly.">
+            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
               <div className="">
                 {/* <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" /> */}
                 <svg className="w-6 h-6 text-blue-500 fill-current">
@@ -450,9 +451,11 @@ export default function ProductPage({ product }) {
               </div>
               <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
             </div>
+            </Tooltip>
 
             {/* 24/7 Support */}
-            <div className="bg-neutral-800 px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
+            <Tooltip text="Get prompt assistance from our dedicated support team.">
+            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
               <div className="">
                 {/* <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" /> */}
                 <svg className="w-6 h-6 text-[#1cc54c] fill-current">
@@ -461,9 +464,11 @@ export default function ProductPage({ product }) {
               </div>
               <span className="text-xs lg:text-sm text-white">24/7 Support</span>
             </div>
+            </Tooltip>
 
             {/* Verified Sellers */}
-            <div className="bg-neutral-800 px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
+            <Tooltip text="Buy confidently from verified and reliable sellers.">
+            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
               <div className="">
                 {/* <MdVerified className="text-xl lg:text-3xl text-[#359dff]" /> */}
                 <svg className="w-6 h-6">
@@ -472,6 +477,8 @@ export default function ProductPage({ product }) {
               </div>
               <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
             </div>
+            </Tooltip>
+            
           </div>
         </div>
       </div>
@@ -561,7 +568,20 @@ export default function ProductPage({ product }) {
           {Tags.gametag_15 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_15}</div>)}
         </div>
 
-        <div className="mt-5"><p className="text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">{product.description}</p></div>
+        {/* <div className="mt-5"><p className="text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">{product.description}</p></div> */}
+        <div className="mt-5">
+          <ReactMarkdown
+            components={{
+              h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
+              strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
+              ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
+              li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
+              p: ({ node, ...props }) => <p className="mb-2 leading-relaxed text-[#bfbfbf]" {...props} />,   //importent
+            }}
+          >
+            {product?.description}
+          </ReactMarkdown>
+        </div>
 
         {product.descriptionkey && (<><div className="mt-5 text-md font-bold">Key Features</div>
 
@@ -582,7 +602,7 @@ export default function ProductPage({ product }) {
           </div></>)}
 
         {product?.editiondescription && (<div>
-          <div className="mt-5 text-md font-bold">Premium Edition Features</div>
+          <div className="mt-5 text-md font-bold">{product?.editiontitle}</div>
 
           <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
             <div className="ml-8 justify-center">
