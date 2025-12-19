@@ -18,7 +18,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import PageLoader from "@/components/PageLoader";
 import 'react-loading-skeleton/dist/skeleton.css';
 import { SkeletonTheme } from 'react-loading-skeleton';
-
+import TermlyCMP from '@/components/TermlyCMP'
 
 // Optional: Configure NProgress
 NProgress.configure({ showSpinner: false }); // only bar
@@ -49,6 +49,7 @@ function CartLoader({ children }) {
   return children;
 }
 
+const WEBSITE_UUID = process.env.NEXT_PUBLIC_TERMLY_WEBSITE_UUID;
 
 export default function MyApp({ Component, pageProps }) {
 
@@ -125,6 +126,7 @@ export default function MyApp({ Component, pageProps }) {
         <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet" />
       </Head>
       <ThemeProvider attribute="class">
+        <TermlyCMP websiteUUID={WEBSITE_UUID} />
         {/* <SessionProvider session={session}> */}
         <AuthProvider>
           <Provider store={store}>
