@@ -147,9 +147,9 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p>© 2025 Driffle. All rights reserved.</p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-white transition">Terms & Conditions</a>
-            <a href="#" className="hover:text-white transition">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition">Imprint</a>
+            <Link href="/legal/terms-and-conditions" className="hover:text-white transition">Terms & Conditions</Link>
+            <Link href="/legal/privacy-policy" className="hover:text-white transition">Privacy Policy</Link>
+            <Link href="/legal/refund-policy" className="hover:text-white transition">Refund Policy</Link>
           </div>
         </div>
       </div>
