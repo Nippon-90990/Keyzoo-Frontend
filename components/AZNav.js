@@ -68,7 +68,8 @@ const scrollTo = (letter) => {
 
   return (
     <div className="sticky top-30 z-30 mb-12">
-      <div className="mx-auto max-w-6xl rounded-xl border border-white/10 bg-gradient-to-b from-[#111] to-[#0a0a0a] backdrop-blur px-4 py-3">
+      {/* <div className="mx-auto max-w-6xl rounded-xl border border-white/10 bg-gradient-to-b from-[#111] to-[#0a0a0a] backdrop-blur px-4 py-3"> */}
+      <div className="mx-auto max-w-6xl rounded-xl border-none outline-none border-white/10 bg-[#1c1c1c] px-4 py-3">
         <div className="flex flex-wrap justify-center gap-4">
           {letters.map((l) => {
             const isActive = activeLetter === l
@@ -78,7 +79,7 @@ const scrollTo = (letter) => {
                 key={l}
                 onClick={() => scrollTo(l)}
                 className={`
-                  text-sm font-medium transition
+                  text-2xl font-medium transition
                   ${isActive
                     ? "text-white"
                     : "text-white/50 hover:text-white"}

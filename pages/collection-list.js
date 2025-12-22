@@ -74,7 +74,7 @@ export default function ExplorePage() {
         <title>Explore Games & Categories | Keyzoo</title>
       </Head>
 
-      <section className="min-h-screen bg-black text-white">
+      <section className="min-h-screen text-white">
         <div className="mx-auto max-w-7xl px-6 py-16">
 
           <h1 className="mb-6 text-3xl font-semibold tracking-tight">
