@@ -66,6 +66,7 @@ body {
     transform: rotate(360deg);
   }
 }
+
 .animate-spin-slow {
   animation: spin-slow 4s linear infinite;
 }
@@ -76,23 +77,28 @@ body {
     transform: rotate(0deg) translate3d(40px, 0, 0) rotate(0deg);
     opacity: 0.8;
   }
+
   25% {
     transform: rotate(90deg) translate3d(40px, 0, 0) rotate(-90deg);
     opacity: 1;
   }
+
   50% {
     transform: rotate(180deg) translate3d(40px, 0, 0) rotate(-180deg);
     opacity: 0.9;
   }
+
   75% {
     transform: rotate(270deg) translate3d(40px, 0, 0) rotate(-270deg);
     opacity: 1;
   }
+
   100% {
     transform: rotate(360deg) translate3d(40px, 0, 0) rotate(-360deg);
     opacity: 0.8;
   }
 }
+
 .animate-orbit {
   animation: orbit 3s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   transform-origin: center;
@@ -101,10 +107,21 @@ body {
 }
 
 /* Staggered delay utility classes */
-.delay-\[0s\] { animation-delay: 0s; }
-.delay-\[0\.75s\] { animation-delay: 0.75s; }
-.delay-\[1\.5s\] { animation-delay: 1.5s; }
-.delay-\[2\.25s\] { animation-delay: 2.25s; }
+.delay-\[0s\] {
+  animation-delay: 0s;
+}
+
+.delay-\[0\.75s\] {
+  animation-delay: 0.75s;
+}
+
+.delay-\[1\.5s\] {
+  animation-delay: 1.5s;
+}
+
+.delay-\[2\.25s\] {
+  animation-delay: 2.25s;
+}
 
 /* Soft white glow for orbiting shapes */
 .shadow-glow {
@@ -118,17 +135,20 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
   }
+
   50% {
     transform: scale(1.15);
     background-color: rgba(255, 255, 255, 0.25);
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
   }
+
   100% {
     transform: scale(1);
     background-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
   }
 }
+
 .animate-pulseGlow {
   animation: pulseGlow 2s ease-in-out infinite;
 }
@@ -154,12 +174,10 @@ body {
   width: 120px;
   height: 120px;
   border-radius: 9999px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.02) 70%,
-    transparent 100%
-  );
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.02) 70%,
+      transparent 100%);
   filter: blur(8px);
   animation: haloPulse 3s ease-in-out infinite alternate;
 }
@@ -171,7 +189,7 @@ body {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.35),
-              0 0 40px rgba(255, 255, 255, 0.25);
+    0 0 40px rgba(255, 255, 255, 0.25);
   animation: corePulse 2.6s ease-in-out infinite;
 }
 
@@ -192,29 +210,77 @@ body {
 }
 
 /* delays so they chase each other */
-.delay-0 { animation-delay: 0s; }
-.delay-1 { animation-delay: 0.75s; }
-.delay-2 { animation-delay: 1.5s; }
-.delay-3 { animation-delay: 2.25s; }
+.delay-0 {
+  animation-delay: 0s;
+}
+
+.delay-1 {
+  animation-delay: 0.75s;
+}
+
+.delay-2 {
+  animation-delay: 1.5s;
+}
+
+.delay-3 {
+  animation-delay: 2.25s;
+}
 
 /* ================= Animations ================= */
 @keyframes orbit {
-  0%   { transform: rotate(0deg) translate3d(0, -60px, 0) rotate(0deg); opacity: 0.8; }
-  25%  { transform: rotate(90deg) translate3d(0, -60px, 0) rotate(-90deg); opacity: 1; }
-  50%  { transform: rotate(180deg) translate3d(0, -60px, 0) rotate(-180deg); opacity: 0.85; }
-  75%  { transform: rotate(270deg) translate3d(0, -60px, 0) rotate(-270deg); opacity: 1; }
-  100% { transform: rotate(360deg) translate3d(0, -60px, 0) rotate(-360deg); opacity: 0.8; }
+  0% {
+    transform: rotate(0deg) translate3d(0, -60px, 0) rotate(0deg);
+    opacity: 0.8;
+  }
+
+  25% {
+    transform: rotate(90deg) translate3d(0, -60px, 0) rotate(-90deg);
+    opacity: 1;
+  }
+
+  50% {
+    transform: rotate(180deg) translate3d(0, -60px, 0) rotate(-180deg);
+    opacity: 0.85;
+  }
+
+  75% {
+    transform: rotate(270deg) translate3d(0, -60px, 0) rotate(-270deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(360deg) translate3d(0, -60px, 0) rotate(-360deg);
+    opacity: 0.8;
+  }
 }
 
 @keyframes haloPulse {
-  0%   { transform: scale(1); opacity: 0.5; }
-  100% { transform: scale(1.08); opacity: 0.9; }
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1.08);
+    opacity: 0.9;
+  }
 }
 
 @keyframes corePulse {
-  0%   { transform: scale(1); opacity: 1; }
-  50%  { transform: scale(1.15); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 
@@ -258,14 +324,26 @@ body {
   gap: 10px;
 }
 
-.text-d-gray{
+.text-d-gray {
   color: rgb(128, 128, 128);
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-8px); }
-  40%, 80% { transform: translateX(8px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
 }
 
 .animate-shake {
@@ -274,22 +352,27 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px; /* thin */
-  height: 6px; /* thin */
+  width: 6px;
+  /* thin */
+  height: 6px;
+  /* thin */
 }
 
 ::-webkit-scrollbar-track {
-  background: #111; /* dark bg */
+  background: #111;
+  /* dark bg */
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #444; /* gray thumb */
+  background: #444;
+  /* gray thumb */
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #666; /* lighter when hover */
+  background: #666;
+  /* lighter when hover */
 }
 
 *,
@@ -297,3 +380,54 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+/* @keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit {
+  animation: spin-slow 40s linear infinite;
+}
+
+.orbit-slow {
+  animation-duration: 60s;
+}
+
+.orbit-fast {
+  animation-duration: 30s;
+} */
+
+ .orbit {
+  animation: spin 40s linear infinite;
+}
+/*
+.orbit-slow {
+  animation: spin 70s linear infinite;
+}
+
+.orbit-fast {
+  animation: spin 35s linear infinite;
+}
+
+.orbit-faster {
+  animation: spin 25s linear infinite;
+}
+
+.orbit-fastest {
+  animation: spin 50s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+} */

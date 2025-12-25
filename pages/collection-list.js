@@ -2,7 +2,7 @@
 import { useState } from "react"
 import Head from "next/head"
 import AZNav from "@/components/AZNav"
-import AZDirectory from "@/components/AZDirectory"
+import AZDirectoryPublication from "@/components/AZDirectoryPublication"
 import { azData } from "@/data/azData"
 
 export default function ExplorePage() {
@@ -47,7 +47,7 @@ export default function ExplorePage() {
           />
 
           {/* Directory */}
-          <AZDirectory
+          <AZDirectoryPublication
             data={azData}
             search={search}
             onActiveChange={setActiveLetter}
