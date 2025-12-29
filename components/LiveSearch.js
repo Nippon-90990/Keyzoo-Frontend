@@ -73,7 +73,7 @@ export default function LiveSearch({ isSearchOpen, setIsSearchOpen }) {
 
             const PlayStations = (PlayStationData.data || []).map((item) => ({
                 ...item,
-                type: "store/category/psn",
+                type: "store/category/psn", // Adjust type as needed for PlayStations. Maybe this is wrong.
             }));
 
             // Merge and set state

@@ -188,7 +188,9 @@ export default function ProductPage({ product }) {
                             {/* <div className="bg-white dark:bg-[#1a1a1a] p-3 rounded-xl text-white"> */}
                             <div className="h-[56px] w-[56px] border border-[#e7e7e7] bg-white dark:bg-amber-500 rounded-xl flex items-center justify-center">
                                 {/* <SlCheck className="text-xl text-[#1cc54c]" /> */}
-                                <Image src={'/tick.svg'} height={26} width={26} />
+                                <svg className="w-[32px] h-[32px] text-blue-500 fill-current">
+                                    <use xlinkHref="/sprit/icons.svg#green-tick"></use>
+                                </svg>
                             </div>
                             <div>
                                 <p className="text-xs lg:text-sm">
@@ -222,7 +224,7 @@ export default function ProductPage({ product }) {
                                     <path d="M25.8815 18.6765H22.0481L21.4404 14.8549L19.1939 18.6497H18.7739C18.5188 18.2104 18.4179 17.5673 18.4179 17.1735C18.4179 16.5206 18.4648 15.8841 18.4648 15.0556C18.4648 13.9568 18.1418 13.367 17.28 13.1598V13.1273C19.1131 12.8724 19.9444 11.6595 19.9444 9.95193C19.9444 7.52591 18.3306 7 16.2156 7H10.525L8.12012 18.3882H11.1442L12.0193 14.2444H14.0294C15.1019 14.2444 15.5402 14.7691 15.5402 15.7732C15.5402 16.537 15.4606 17.1417 15.4606 17.7298C15.4606 17.9477 15.51 18.4535 15.6568 18.6497C15.6553 18.6497 17.8426 20.9562 17.8426 20.9562L15.9622 25L19.9844 22.6102L22.9816 24.9127L22.4221 21.0977L25.8815 18.6765ZM14.9332 12.1124H12.5296L13.1054 9.36687H15.3417C16.1379 9.36687 16.9661 9.57399 16.9661 10.5484C16.9661 11.7766 16.0228 12.1124 14.9332 12.1124Z" fill="black" />
                                     <path d="M20.0264 21.9386L17.225 23.6018L18.5072 20.848L16.948 19.2058H19.512L21.1338 16.4658L21.573 19.233H24.1166L21.8235 20.8376L22.2332 23.6353L20.0264 21.9386Z" fill="white" />
                                 </svg> */}
-                                <Image src={platform} height={26} width={26} />
+                                <Image src={platform} height={40} width={40} />
                             </div>
                             <div>
                                 <p className="text-xs lg:text-sm">
@@ -448,12 +450,13 @@ export default function ProductPage({ product }) {
             {/* Product Description */}
             <div className="bg-[#1a1a1a] p-3 lg:p-4 rounded-xl mt-4 lg:mt-6 text-xs lg:text-sm border border-[#2a2a2a] max-w-[1500px] mx-auto">
                 <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 dark:text-white">Product description</h2>
-                {/* <div className="font-semibold mb-5 text-lg">{product.title}</div> */}
 
                 <div className="flex items-center gap-2 mb-5.5">
                     <span className="text-gray-400 text-[14px]">System :</span>
                     <span className="bg-[#2f2f2f] text-white px-2 lg:px-3 py-1.5 rounded-[20px] text-[14px] font-medium cursor-pointer">{product.workPlatform}</span>
                 </div>
+
+                <div className="font-semibold mb-5 text-lg">{product.title}</div>
 
                 {Tags.gametag_1 && (<div className="flex gap-3.5">
                     {Tags.gametag_1 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_1}</div>)}

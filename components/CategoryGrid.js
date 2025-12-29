@@ -45,7 +45,7 @@ const CategoryGrid = () => {
 
         return (
           <div className="flex flex-col gap-4.5">
-            <Link key={item.id} href="#">
+            <Link key={item.id} href={linkHref}>
               <div className="relative h-[210px] rounded-xl overflow-hidden group shadow-md hover:shadow-xl transition">
                 <Image
                   src={imgUrl}
