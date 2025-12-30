@@ -375,6 +375,19 @@ body {
   /* lighter when hover */
 }
 
+/* Hide scrollbar but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE & Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+
 *,
 *::before,
 *::after {
@@ -403,9 +416,10 @@ body {
   animation-duration: 30s;
 } */
 
- .orbit {
+.orbit {
   animation: spin 40s linear infinite;
 }
+
 /*
 .orbit-slow {
   animation: spin 70s linear infinite;

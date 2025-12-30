@@ -8,6 +8,20 @@ import useCurrency from '@/hook/useCurrency';
 export default function BeastSelling() {
     const { symbol } = useCurrency();
     const [products, setProducts] = useState([]);
+    const [regionOpen, setRegionOpen] = useState(false);
+    const [selectedRegion, setSelectedRegion] = useState("India");
+
+    const regions = [
+        "United States",
+        "Germany",
+        "Poland",
+        "France",
+        "United Kingdom",
+        "India",
+        "Hungary",
+        "Brazil",
+    ];
+
 
     useEffect(() => {
         async function getProducts() {
@@ -44,6 +58,110 @@ export default function BeastSelling() {
 
     return (
         <div className="px-4 md:px-10 py-8">
+            {/* ===== PSN HERO (IMAGE ONLY) ===== */}
+            <section className="relative w-full h-[450px] overflow-hidden rounded-xl mb-10">
+                {/* Background image */}
+                <Image
+                    src="https://static.driffle.com/media-gallery/production/b6919f4f-4679-4c15-9d8a-834471b9d401_psn-bannerwebp"
+                    alt="PSN Banner"
+                    fill
+                    priority
+                    className="object-center"
+                />
+            </section>
+
+            {/* ===== SECTION 2: FILTER BAR ===== */}
+            <section className="rounded-xl mb-10">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center gap-6">
+
+                    {/* Left side */}
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <span className="text-lg text-[#ffffff] whitespace-nowrap">
+                            Get PSN Gift cards for
+                        </span>
+
+                        {/* <div className="relative min-w-[350px]">
+                            <select className="appearance-none w-full h-[44px] bg-[#3a3a3a] text-white text-sm px-4 pr-10 rounded-lg leading-[44px] outline-none">
+                                <option value="IN">India</option>
+                                <option value="US">United States</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="PL">Poland</option>
+                            </select>
+
+                            {/* Arrow 
+                            <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/70">
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                        </div> */}
+
+                        <div className="relative min-w-[350px]">
+                            {/* Trigger */}
+                            <button onClick={() => setRegionOpen(!regionOpen)} className="cursor-pointer w-full h-[44px] bg-[#3a3a3a] text-white px-4 rounded-lg flex items-center justify-between border-none outline-none">
+                                <span className="text-sm">{selectedRegion}</span>
+                                <svg
+                                    className={`w-4 h-4 transition-transform ${regionOpen ? "rotate-180" : ""
+                                        }`}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown */}
+                            {regionOpen && (
+                                <div
+                                    className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl max-h-[260px] overflow-y-auto border border-white/10 no-scrollbar">
+                                    {regions.map((region) => (
+                                        <button
+                                            key={region}onClick={() => {
+                                                setSelectedRegion(region);
+                                                setRegionOpen(false);
+                                            }}
+                                            className={`w-full text-left px-4 py-3 text-sm hover:bg-[#3a3a3a] transition cursor-pointer ${selectedRegion === region ? "bg-[#3a3a3a] text-white" : "text-white/90"}`}>
+                                            {region}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+
+                    {/* Divider */}
+                    <div className="hidden md:block w-px h-6 bg-white/20" />
+
+                    {/* Right side */}
+                    <div className="flex items-center gap-3 text-sm text-white">
+                        <span className="opacity-70 mr-1">Top regions</span>
+
+                        {["Poland", "United States", "United Kingdom"].map((region) => (
+                            <button key={region} className="px-4 py-1.5 rounded-full bg-[#1f1f1f] hover:bg-[#2a2a2a] transition text-white">
+                                {region}
+                            </button>
+                        ))}
+                    </div>
+
+                </div>
+            </section>
+
+
             <section className="my-0">
                 <h2 className="text-xl font-bold mb-4 dark:text-white">Best Selling Games</h2>
 

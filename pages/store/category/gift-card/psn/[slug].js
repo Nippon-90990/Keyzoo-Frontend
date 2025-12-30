@@ -228,7 +228,7 @@ export default function ProductPage({ product }) {
                             </div>
                             <div>
                                 <p className="text-xs lg:text-sm">
-                                    Platform: <strong>Rockstar Games</strong>
+                                    Platform: <strong>{product.workPlatform}</strong>
                                 </p>
                                 <a href="#" className="text-[#359dff] text-xs">Activation Guide</a>
                             </div>
@@ -312,8 +312,8 @@ export default function ProductPage({ product }) {
                         <p className="text-xs text-white/70 uppercase font-medium mb-1">Featured Offer</p>
                         <p className="text-xl lg:text-2xl font-bold">{symbol} {Number(product.discountPrice).toFixed(2)}</p>
                         <div className="flex items-center gap-2 text-xs lg:text-sm text-white/60">
-                            <span className="line-through">{symbol} {Number(product.price).toFixed(2)}</span>
-                            <span className="text-green-400 font-semibold">~ {discountPercent}% off</span>
+                            {/* <span className="line-through">{symbol} {Number(product.price).toFixed(2)}</span>
+                            <span className="text-green-400 font-semibold">~ {discountPercent}% off</span> */}
                         </div>
                     </div>
 
@@ -483,7 +483,7 @@ export default function ProductPage({ product }) {
                         <div className="justify-center">
                             <ReactMarkdown
                                 components={{
-                                    h1: ({ node, ...props }) => <h1 className="font-semibold mb-5 text-lg" {...props} />,    //importent but if you add h2 on heading description
+                                    h1: ({ node, ...props }) => <h1 className="font-semibold mb-2.5 text-lg" {...props} />,    //importent but if you add h2 on heading description
                                     h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
                                     strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
                                     ul: ({ node, ...props }) => <ul className="list-disc pl-0 ml-8 mb-5" {...props} />,   //importent

@@ -78,10 +78,13 @@ export default function LiveSearch({ isSearchOpen, setIsSearchOpen }) {
 
             // Merge and set state
             setResults([...products, ...giftCards, ...PlayStations]);
-        } catch (err) {
+        }
+
+        catch (err) {
             console.error("Error fetching search results:", err);
             setResults([]);
         }
+        
     }, 300);
 
 

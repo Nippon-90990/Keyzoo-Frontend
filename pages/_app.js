@@ -114,7 +114,7 @@ export default function MyApp({ Component, pageProps }) {
           name="viewport"
           content="width=device-width, initial-scale=1"
         />
-        <link rel="icon" href="http://localhost:1337/uploads/Untitled_design_14_1_1_30fe7c121e.png" />
+        {/* <link rel="icon" href="http://localhost:1337/uploads/Untitled_design_14_1_1_30fe7c121e.png" /> */}
         {/* <link rel="preconnect" href="https://fonts.googleapis.com" /> */}
         {/* <link
           rel="preconnect"
