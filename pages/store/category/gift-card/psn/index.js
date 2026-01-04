@@ -1,42 +1,250 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useCurrency from '@/hook/useCurrency';
+import { useRouter } from 'next/router';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
-export default function BeastSelling() {
+const normalizeRegion = (value) => value?.trim().toUpperCase(); // this will help in changing cases.
+
+export default function PSNGiftCard() {
+    
     const { symbol } = useCurrency();
     const [products, setProducts] = useState([]);
     const [regionOpen, setRegionOpen] = useState(false);
-    const [selectedRegion, setSelectedRegion] = useState("India");
+    const [search, setSearch] = useState("");
+    const [regions, setRegions] = useState([]);
+    const [selectedRegion, setSelectedRegion] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const regions = [
-        "United States",
-        "Germany",
-        "Poland",
-        "France",
-        "United Kingdom",
-        "India",
-        "Hungary",
-        "Brazil",
-    ];
+    const router = useRouter();
+    const dropdownRef = useRef(null);
 
-
+    // Close dropdown on outside click
     useEffect(() => {
-        async function getProducts() {
-            try {
-                const res = await fetchFromStrapi('api/play-station-gift-cards?populate=*');
-                // const resImage = await fetchFromStrapi('/products?populate=image');
-                setProducts(res.data || []);
-                // setProducts(resImage.data || []);
-            } catch (error) {
-                console.error('Failed to fetch products:', error);
+        function handleClickOutside(event) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setRegionOpen(false);
+                setSearch("");
             }
         }
 
-        getProducts();
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, []);
+
+
+    // Filtered regions based on search input
+    const filteredRegions = regions.filter((region) =>
+        region.toLowerCase().includes(search.toLowerCase())
+    );
+
+    // Handle region selection
+    const handleRegionChange = (region) => {
+        const normalized = normalizeRegion(region);
+
+        setSelectedRegion(normalized);
+        setRegionOpen(false);
+
+        router.push(
+            {
+                pathname: router.pathname,
+                query: { region: normalized },
+            },
+            undefined,
+            { shallow: true }
+        );
+    };
+
+
+
+    // const regions = [
+    //     "UNITED STATES",
+    //     "Germany",
+    //     "Poland",
+    //     "France",
+    //     "United Kingdom",
+    //     "INDIA",
+    //     "Hungary",
+    //     "Brazil",
+    // ];
+
+
+    // useEffect(() => {
+    //     async function getProducts() {
+    //         try {
+    //             const res = await fetchFromStrapi('api/play-station-gift-cards?populate=*');
+    //             // const resImage = await fetchFromStrapi('/products?populate=image');
+    //             setProducts(res.data || []);
+    //             // setProducts(resImage.data || []);
+    //         } catch (error) {
+    //             console.error('Failed to fetch products:', error);
+    //         }
+    //     }
+
+    //     getProducts();
+    // }, []);
+
+    // useEffect(() => {
+    //     async function getProducts() {
+    //         try {
+    //             setLoading(true);
+
+    //             const query = selectedRegion
+    //                 ? `api/play-station-gift-cards?populate=*&filters[card_region][$eq]=${encodeURIComponent(selectedRegion)}`
+    //                 : `api/play-station-gift-cards?populate=*`;
+
+    //             const res = await fetchFromStrapi(query);
+    //             setProducts(res.data || []);
+    //         } catch (error) {
+    //             console.error("Failed to fetch products:", error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+
+    //     getProducts();
+    // }, [selectedRegion]);
+
+    // useEffect(() => {
+    //     async function getRegions() {
+    //         try {
+    //             // fetch only what we need
+    //             const res = await fetchFromStrapi(
+    //                 "api/play-station-gift-cards?fields[0]=card_region&pagination[pageSize]=100"
+    //             );
+
+    //             const regionSet = new Set();
+
+    //             res?.data?.forEach(item => {
+    //                 if (item.card_region) {
+    //                     regionSet.add(item.card_region);
+    //                 }
+    //             });
+
+    //             const regionArray = Array.from(regionSet).sort();
+
+    //             setRegions(regionArray);
+
+    //             // fallback default
+    //             if (regionArray.includes("India")) {
+    //                 setSelectedRegion("India");
+    //             } else if (regionArray.length) {
+    //                 setSelectedRegion(regionArray[0]);
+    //             }
+
+    //         } catch (error) {
+    //             console.error("Failed to fetch regions:", error);
+    //         }
+    //     }
+
+    //     getRegions();
+    // }, []);
+
+    useEffect(() => {
+        if (!router.isReady) return;
+
+        const urlRegion = router.query.region;
+
+        if (urlRegion) {
+            setSelectedRegion(normalizeRegion(urlRegion));
+        }
+    }, [router.isReady]);
+
+    useEffect(() => {
+        async function getAllProducts() {
+            try {
+                setLoading(true);
+                const res = await fetchFromStrapi(
+                    "api/play-station-gift-cards?populate=*"
+                );
+                setProducts(res.data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        getAllProducts();
+    }, []);
+
+
+    useEffect(() => {
+        async function getRegions() {
+            try {
+                const res = await fetchFromStrapi(
+                    "api/play-station-gift-cards?fields[0]=card_region&pagination[pageSize]=200"
+                );
+
+                const set = new Set();
+                res?.data?.forEach(item => {
+                    if (item.card_region) {
+                        set.add(normalizeRegion(item.card_region));
+                    }
+                });
+
+                setRegions(["ALL Regions", ...Array.from(set).sort()]);
+            } catch (err) {
+                console.error("Failed to fetch regions", err);
+            }
+        }
+
+        getRegions();
+    }, []);
+
+    useEffect(() => {
+        if (selectedRegion === "ALL Regions") {
+            // reset to all products
+            fetchFromStrapi("api/play-station-gift-cards?populate=*")
+                .then(res => setProducts(res.data || []));
+            return;
+        }
+
+        async function getFilteredProducts() {
+            try {
+                setLoading(true);
+
+                const res = await fetchFromStrapi(
+                    `api/play-station-gift-cards?populate=*&filters[card_region][$eq]=${encodeURIComponent(
+                        normalizeRegion(selectedRegion)
+                    )}`
+                );
+
+                setProducts(res.data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        getFilteredProducts();
+    }, [selectedRegion]);
+
+    // 1️⃣ LOADING FIRST
+    if (loading) {
+        return (
+            <div className="px-4 md:px-10 py-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <Skeleton
+                            key={i}
+                            height={360}
+                            borderRadius={12}
+                        />
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     if (!products || products.length === 0) {
         return (
@@ -49,12 +257,39 @@ export default function BeastSelling() {
                     className="mb-4">
                 </Image>
                 {/* <h2 className="text-xl font-bold mb-4 dark:text-white">
-          Best Selling Games
-        </h2>
-        <p className="text-gray-500">No products found in Best Selling.</p> */}
+                        Best Selling Games
+                    </h2>
+                    <p className="text-gray-500">No products found in Best Selling.</p>
+                */}
             </section>
         );
     }
+
+    // if (loading) {
+    //     return (
+    //         <SkeletonTheme baseColor="#202020" highlightColor="#444">
+    //             <div className="my-6">
+    //                 <h2 className="text-xl font-bold mb-4 dark:text-white">
+    //                     Explore By Platforms
+    //                 </h2>
+
+    //                 <div className="flex gap-4 overflow-hidden no-scrollbar">
+    //                     {Array(6)
+    //                         .fill(0)
+    //                         .map((_, i) => (
+    //                             <Skeleton
+    //                                 key={i}
+    //                                 height={200}
+    //                                 width={298}
+    //                                 borderRadius={16}
+    //                                 className="rounded-xl"
+    //                             />
+    //                         ))}
+    //                 </div>
+    //             </div>
+    //         </SkeletonTheme>
+    //     );
+    // }
 
     return (
         <div className="px-4 md:px-10 py-8">
@@ -105,10 +340,10 @@ export default function BeastSelling() {
                             </div>
                         </div> */}
 
-                        <div className="relative min-w-[350px]">
+                        <div ref={dropdownRef} className="relative min-w-[400px]">
                             {/* Trigger */}
-                            <button onClick={() => setRegionOpen(!regionOpen)} className="cursor-pointer w-full h-[44px] bg-[#3a3a3a] text-white px-4 rounded-lg flex items-center justify-between border-none outline-none">
-                                <span className="text-sm">{selectedRegion}</span>
+                            <button onClick={() => setRegionOpen(!regionOpen)} className="cursor-pointer w-full h-[50px] bg-[#3a3a3a] text-white px-4 rounded-lg flex items-center justify-between border-none outline-none">
+                                <span className="text-sm">{selectedRegion || "Select Region"}</span>
                                 <svg
                                     className={`w-4 h-4 transition-transform ${regionOpen ? "rotate-180" : ""
                                         }`}
@@ -124,21 +359,73 @@ export default function BeastSelling() {
                             </button>
 
                             {/* Dropdown */}
-                            {regionOpen && (
+                            {/* {regionOpen && (
                                 <div
                                     className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl max-h-[260px] overflow-y-auto border border-white/10 no-scrollbar">
                                     {regions.map((region) => (
                                         <button
-                                            key={region}onClick={() => {
+                                            key={region} onClick={() => {
                                                 setSelectedRegion(region);
                                                 setRegionOpen(false);
+
+                                                router.push(
+                                                    {
+                                                        pathname: router.pathname,
+                                                        query: region === "ALL Regions" ? {} : { region },
+                                                    },
+                                                    undefined,
+                                                    { shallow: true }
+                                                );
                                             }}
                                             className={`w-full text-left px-4 py-3 text-sm hover:bg-[#3a3a3a] transition cursor-pointer ${selectedRegion === region ? "bg-[#3a3a3a] text-white" : "text-white/90"}`}>
                                             {region}
                                         </button>
                                     ))}
                                 </div>
+                            )} */}
+
+                            {regionOpen && (
+                                <div className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl border border-white/10">
+
+                                    {/* SEARCH INPUT */}
+                                    <div className="p-3 border-b border-white/10">
+                                        <input
+                                            autoFocus
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            placeholder="Search region..."
+                                            className="w-full bg-[#1f1f1f] text-white text-sm px-3 py-2 rounded-md outline-none"
+                                        />
+                                    </div>
+
+                                    {/* OPTIONS */}
+                                    <div className="max-h-[220px] overflow-y-auto no-scrollbar">
+                                        {filteredRegions.length > 0 ? (
+                                            filteredRegions.map((region) => (
+                                                <button
+                                                    key={region}
+                                                    onClick={() => {
+                                                        handleRegionChange(region);
+                                                        setSearch("");
+                                                    }}
+                                                    className={`w-full text-left px-4 py-3 text-sm transition
+              ${selectedRegion === region
+                                                            ? "bg-[#3a3a3a] text-white"
+                                                            : "text-white/90 hover:bg-[#3a3a3a]"}
+            `}
+                                                >
+                                                    {region}
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <div className="px-4 py-3 text-sm text-white/50">
+                                                No region found
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             )}
+
                         </div>
 
 
@@ -148,14 +435,31 @@ export default function BeastSelling() {
                     <div className="hidden md:block w-px h-6 bg-white/20" />
 
                     {/* Right side */}
-                    <div className="flex items-center gap-3 text-sm text-white">
-                        <span className="opacity-70 mr-1">Top regions</span>
+                    <div className="flex items-center gap-3 text-sm text-[#ffffff]">
+                        <span className="text-lg mr-1">Top regions</span>
 
-                        {["Poland", "United States", "United Kingdom"].map((region) => (
-                            <button key={region} className="px-4 py-1.5 rounded-full bg-[#1f1f1f] hover:bg-[#2a2a2a] transition text-white">
-                                {region}
-                            </button>
-                        ))}
+                        {["Poland", "United States", "United Kingdom"].map((region) => {
+                            const normalized = normalizeRegion(region);
+
+                            return (
+                                <button key={region} className={`px-4 py-1.5 rounded-full transition text-white ${selectedRegion === normalized ? "bg-[#3a3a3a]" : "bg-[#1f1f1f] hover:bg-[#2a2a2a]"}`}
+                                    onClick={() => {
+                                        setSelectedRegion(normalized);
+
+                                        router.push(
+                                            {
+                                                pathname: router.pathname,
+                                                query: { region: normalized },
+                                            },
+                                            undefined,
+                                            { shallow: true }
+                                        );
+                                    }}>
+                                    {region}
+                                </button>
+                            );
+                        })}
+
                     </div>
 
                 </div>
@@ -167,95 +471,105 @@ export default function BeastSelling() {
 
                 {/* <div className="grid grid-cols-6 gap-4.5  "> */}
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                    {products.map((item) => {
-                        //   const { title, slug, price, coverImage } = item.attributes;
+                    {loading ? (
+                        Array.from({ length: 12 }).map((_, i) => (
+                            <Skeleton
+                                key={i}
+                                height={360}
+                                borderRadius={12}
+                            />
+                        ))
+                    ) : (
+                        products.map((item) => {
+                            //   const { title, slug, price, coverImage } = item.attributes;
 
-                        const getStrapiMedia = (url) => {
-                            if (!url) return '';
-                            if (url.startsWith('http')) return url;
-                            return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
-                        };
+                            const getStrapiMedia = (url) => {
+                                if (!url) return '';
+                                if (url.startsWith('http')) return url;
+                                return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
+                            };
 
-                        const imgUrl = getStrapiMedia(item.image?.url);
+                            const imgUrl = getStrapiMedia(item.image?.url);
 
-                        return (
-                            <div key={item.id} className='mb-2 mt-2'>
-                                {item.Available ? (<Link
-                                    href={`/store/category/gift-card/psn/${item.slug}`}
-                                    // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
-                                    className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1"
-                                >
-                                    <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
-                                        {/* {imageUrl && ( */}
-                                        <Image
-                                            src={imgUrl}
-                                            alt={item.title}
-                                            fill
-                                            className="object-center"
-                                        />
-                                        {/* )} */}
+                            return (
+                                <div key={item.id} className='mb-2 mt-2'>
+                                    {item.Available ? (<Link
+                                        href={`/store/category/gift-card/psn/${item.slug}`}
+                                        // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
+                                        className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1"
+                                    >
+                                        <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
+                                            {/* {imageUrl && ( */}
+                                            <Image
+                                                src={imgUrl}
+                                                alt={item.title}
+                                                fill
+                                                className="object-center"
+                                            />
+                                            {/* )} */}
 
-                                        {/* Platform badge */}
-                                        {item.platform && (
-                                            <span className="absolute top-2 left-2 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded uppercase">
-                                                {item.platform}
-                                            </span>
-                                        )}
+                                            {/* Platform badge */}
+                                            {item.platform && (
+                                                <span className="absolute top-2 left-2 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded uppercase">
+                                                    {item.platform}
+                                                </span>
+                                            )}
 
-                                        {/* Discount ribbon */}
-                                        {item.originalPrice && item.originalPrice > item.price && (
-                                            <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded">
-                                                -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
-                                        <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
-                                        <h3 className="text-sm font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
-                                            {symbol} {item.price}
-                                        </p>
-                                    </div>
-                                </Link>) : (<div
-                                    href={`/product/${item.slug}`}
-                                    // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
-                                    className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1 cursor-not-allowed"
-                                >
-                                    <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
-                                        {/* {imageUrl && ( */}
-                                        <Image
-                                            src={imgUrl}
-                                            alt={item.title}
-                                            fill
-                                            className={`object-center transition ${item.Available ? '' : 'grayscale opacity-60'}`}
-                                        />
-                                        {/* )} */}
+                                            {/* Discount ribbon */}
+                                            {item.originalPrice && item.originalPrice > item.price && (
+                                                <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded">
+                                                    -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
+                                            <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
+                                            <h3 className="text-sm font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
+                                                {symbol} {item.price}
+                                            </p>
+                                        </div>
+                                    </Link>) : (<div
+                                        href={`/product/${item.slug}`}
+                                        // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
+                                        className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1 cursor-not-allowed"
+                                    >
+                                        <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
+                                            {/* {imageUrl && ( */}
+                                            <Image
+                                                src={imgUrl}
+                                                alt={item.title}
+                                                fill
+                                                className={`object-center transition ${item.Available ? '' : 'grayscale opacity-60'}`}
+                                            />
+                                            {/* )} */}
 
-                                        {/* Platform badge */}
-                                        {item.platform && (
-                                            <span className="absolute top-2 left-2 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded uppercase">
-                                                {item.platform}
-                                            </span>
-                                        )}
+                                            {/* Platform badge */}
+                                            {item.platform && (
+                                                <span className="absolute top-2 left-2 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded uppercase">
+                                                    {item.platform}
+                                                </span>
+                                            )}
 
-                                        {/* Discount ribbon */}
-                                        {item.originalPrice && item.originalPrice > item.price && (
-                                            <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded">
-                                                -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
-                                        <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
-                                        <h3 className="text-sm font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
-                                            {symbol} {item.price}
-                                        </p>
-                                    </div>
-                                </div>)}
-                            </div>
-                        );
-                    })}
+                                            {/* Discount ribbon */}
+                                            {item.originalPrice && item.originalPrice > item.price && (
+                                                <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded">
+                                                    -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
+                                            <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
+                                            <h3 className="text-sm font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
+                                                {symbol} {item.price}
+                                            </p>
+                                        </div>
+                                    </div>)}
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
                 {/* Show All Button */}
                 {/* <div className="flex justify-center mt-8">
