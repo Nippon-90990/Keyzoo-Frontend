@@ -77,7 +77,7 @@ export default function BeastSelling() {
             try {
                 setLoading(true);
                 const res = await fetchFromStrapi(
-                    "api/play-station-gift-cards?populate=*"
+                    "api/roblox-gift-cards?populate=*"
                 );
                 setProducts(res.data || []);
             } catch (err) {
@@ -95,7 +95,7 @@ export default function BeastSelling() {
         async function getRegions() {
             try {
                 const res = await fetchFromStrapi(
-                    "api/play-station-gift-cards?fields[0]=card_region&pagination[pageSize]=200"
+                    "api/roblox-gift-cards?fields[0]=card_region&pagination[pageSize]=200"
                 );
 
                 const set = new Set();
@@ -117,7 +117,7 @@ export default function BeastSelling() {
     useEffect(() => {
         if (selectedRegion === "ALL Regions") {
             // reset to all products
-            fetchFromStrapi("api/play-station-gift-cards?populate=*")
+            fetchFromStrapi("api/roblox-gift-cards?populate=*")
                 .then(res => setProducts(res.data || []));
             return;
         }
@@ -127,7 +127,7 @@ export default function BeastSelling() {
                 setLoading(true);
 
                 const res = await fetchFromStrapi(
-                    `api/play-station-gift-cards?populate=*&filters[card_region][$eq]=${encodeURIComponent(
+                    `api/roblox-gift-cards?populate=*&filters[card_region][$eq]=${encodeURIComponent(
                         normalizeRegion(selectedRegion)
                     )}`
                 );
@@ -185,7 +185,7 @@ export default function BeastSelling() {
             <section className="relative w-full h-[450px] overflow-hidden rounded-xl mb-10">
                 {/* Background image */}
                 <Image
-                    src="https://static.driffle.com/media-gallery/production/b6919f4f-4679-4c15-9d8a-834471b9d401_psn-bannerwebp"
+                    src="https://static.driffle.com/media-gallery/production/911f6d9c-3dbb-4016-b28e-d35baf036769_roblox-desktop.webp"
                     alt="PSN Banner"
                     fill
                     priority
