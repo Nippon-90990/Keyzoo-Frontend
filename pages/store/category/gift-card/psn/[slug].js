@@ -25,6 +25,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from "swiper/modules"; // ✅ import Navigation
 import "swiper/css/navigation"; // ✅ import navigation styles
 import ErrorPage from "next/error";
+import { addRecentlyViewed } from "@/utils/recentlyViewed";
 
 
 export async function getServerSideProps({ params }) {
@@ -44,6 +45,8 @@ export async function getServerSideProps({ params }) {
 
 export default function ProductPage({ product }) {
 
+    const Type = "psn";     // As slug page parent folder are hardcoded psn so we can set type psn here. We directly inject it here...
+
     // Destructure minimum and recommended requirements safely and languages also...
     const minimumRequirements = product?.minimumRequirement || {};
     const recommendedRequirements = product?.recommendedRequirement || {};
@@ -52,12 +55,6 @@ export default function ProductPage({ product }) {
     const Subtitles = product?.subtitles_language || {};
     const Tags = product?.game_tag_seo || [];
     const relatedProducts = product?.relatedProducts || [];
-
-    // Destructure variations safely
-    // const [selectedVariation, setSelectedVariation] = useState(
-    //     variations?.length > 0 ? variations[0] : null
-    // );
-
     const [ageimage, setAgeimage] = useState(); // Default to true
 
     // // Option 1: Show based on environment variable
@@ -102,10 +99,22 @@ export default function ProductPage({ product }) {
 
     if (!product) return null;
 
-    // const { attributes } = product;
-    // const imageUrl = attributes?.image?.data?.attributes?.url
-    //   ? `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${attributes.image.data.attributes.url}`
-    //   : null;
+    useEffect(() => {
+        if (!product) return;
+
+        addRecentlyViewed({
+            id: product.id,
+            title: product.title,
+            slug: product.slug,
+            type: Type,
+            image: product.image,
+            price: product.price,
+            discountPrice: product.discountPrice,
+            platform: product.platform,
+            card_region: product.card_region,
+            Available: product.Available,
+        });
+    }, [product]);
 
     const getStrapiMedia = (url) => {
         if (!url) return '';
@@ -334,19 +343,19 @@ export default function ProductPage({ product }) {
                         {product.Available ? (<button onClick={handleAddToCart} className="cursor-pointer bg-neutral-800 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
                             <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
                         </button>) :
-                        (<button disabled className="cursor-not-allowed bg-gray-400 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
-                            <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
-                        </button>)}
+                            (<button disabled className="cursor-not-allowed bg-gray-400 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
+                                <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
+                            </button>)}
 
                         {/* Buy Now full-width button */}
                         {product.Available ? (<button className="cursor-pointer flex items-center justify-center gap-2 bg-[#814DE5] hover:bg-[#6C34D8] transition-colors text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
                             <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
                             Buy now
                         </button>) : (
-                        <button disabled className="cursor-not-allowed flex items-center justify-center gap-2 bg-gray-400 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
-                            <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
-                            Sold Out
-                        </button>)}
+                            <button disabled className="cursor-not-allowed flex items-center justify-center gap-2 bg-gray-400 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
+                                <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
+                                Sold Out
+                            </button>)}
                     </div>
 
                     {/* Explore Plus */}

@@ -7,6 +7,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import Image from 'next/image';
 import Link from 'next/link';
 import useCurrency from '@/hook/useCurrency';
+// import GiftCardProductCard from '@/components/cards/GiftCardProductCard';
 
 export default function ProductGiftCardCarousel() {
     const { symbol } = useCurrency();
@@ -90,15 +91,26 @@ export default function ProductGiftCardCarousel() {
 
     return (
         <section className="my-10">
-            <h2 className="text-xl font-bold mb-4 dark:text-white">Best Selling Gift Cards</h2>
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xl font-bold dark:text-white">Best Selling Gift Cards</h2>  {/* mb-4 */}
+
+                <div className="flex gap-2">
+                    <button className="gift-prev w-9 h-9 rounded-full bg-black/40 hover:bg-black/70 text-white transition items-center justify-center flex">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    <button className="gift-next w-9 h-9 rounded-full bg-black/40 hover:bg-black/70 text-white transition items-center justify-center flex">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
 
             {/* Custom Swiper arrows styling */}
             <style>
                 {`
-                    #swiper {
-                        position: relative;
-                        padding: 0 40px; /* adds space on both sides for arrows */
-                    }
                     .swiper-button-prev,
                     .swiper-button-next {
                         color: #ffffff; /* Tailwind's red-400 */
@@ -129,19 +141,37 @@ export default function ProductGiftCardCarousel() {
                     .swiper-pagination-bullet-active {
                         background: #ffffff; /* Tailwind's yellow-400 */
                     }
+
+                    .gift-prev.swiper-button-disabled,
+                    .gift-next.swiper-button-disabled {
+                        opacity: 0.3;
+                        cursor: not-allowed;
+                        pointer-events: none;
+                    }
+
+                    @media (max-width: 768px) {
+                        .gift-prev,
+                        .gift-next {
+                            display: none;
+                        }
+                    }
+
                 `}
             </style>
 
             <Swiper
                 modules={[Navigation]}
                 autoplay
-                spaceBetween={30}
+                spaceBetween={25}
                 slidesPerView={1}
-                navigation
+                navigation={{
+                    prevEl: ".gift-prev",
+                    nextEl: ".gift-next",
+                }}
                 breakpoints={{
                     375: { slidesPerView: 1.5 },
                     768: { slidesPerView: 3 },
-                    1024: { slidesPerView: 6 },
+                    1024: { slidesPerView: 6.2 },   // Adjusted for better fit 1440px screens
                 }}
                 id='swiper'
             // className='max-w-[1500px] mx-auto'
@@ -162,7 +192,7 @@ export default function ProductGiftCardCarousel() {
                             {item.Available ? (<Link
                                 href={`/store/category/gift-card/${item.type}/${item.slug}`}
                                 // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
-                                className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1">
+                                className="block p-[5px] rounded-xl bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1">
                                 <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
                                     {/* {imageUrl && ( */}
                                     <Image
@@ -188,7 +218,7 @@ export default function ProductGiftCardCarousel() {
                                     )}
                                 </div>
                                 <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
-                                    <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
+                                    <h3 className="text-sm font-semibold line-clamp-2 leading-snug px-3 mt-1 text-black">{item.title}</h3>
                                     <h3 className="text-sm font-semibold text-blue-600 px-3 mt-1 line-clamp-1">{item.card_region}</h3>
                                     <p className="text-sm text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
                                         {symbol} {Number(item.discountPrice).toFixed(2)}

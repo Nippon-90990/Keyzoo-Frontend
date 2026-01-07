@@ -53,7 +53,7 @@ const CategoryGrid = () => {
                   fill
                   className="object-center group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-black/40 flex flex-col justify-end p-5 text-white">
+                <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
                   <h3 className="text-xl font-bold mb-1">{item.title}</h3>
                   {/* <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-sm font-semibold px-4 py-1 rounded-full w-fit">
                     {item.button}

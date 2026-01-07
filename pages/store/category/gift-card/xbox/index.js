@@ -183,7 +183,7 @@ export default function XboxGiftCard() {
             <section className="relative w-full h-[450px] overflow-hidden rounded-xl mb-10">
                 {/* Background image */}
                 <Image
-                    src="https://static.driffle.com/media-gallery/production/b6919f4f-4679-4c15-9d8a-834471b9d401_psn-bannerwebp"
+                    src="https://res.cloudinary.com/dblttl9bh/image/upload/v1767511454/Xbox_Gift_Cards_Instant_Digital_Delivery_1_13fdcc7175.png"
                     alt="PSN Banner"
                     fill
                     priority
@@ -359,11 +359,31 @@ export default function XboxGiftCard() {
                     {products.map((item) => {
                         //   const { title, slug, price, coverImage } = item.attributes;
 
+                        // const getStrapiMedia = (url) => {
+                        //     if (!url) return '';
+                        //     if (url.startsWith('http')) return url;
+                        //     return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
+                        // };   // if any error then remove comment
+
                         const getStrapiMedia = (url) => {
-                            if (!url) return '';
-                            if (url.startsWith('http')) return url;
+                            if (!url) return "";
+
+                            // Absolute URL (Cloudinary or Strapi)
+                            if (url.startsWith("http")) {
+                                // Apply Cloudinary optimization ONLY if it's Cloudinary
+                                if (url.includes("res.cloudinary.com")) {
+                                    return url.replace(
+                                        "/image/upload/",
+                                        "/image/upload/f_auto,q_auto/"
+                                    );
+                                }
+                                return url;
+                            }
+
+                            // Relative Strapi media
                             return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
                         };
+
 
                         const imgUrl = getStrapiMedia(item.image?.url);
 

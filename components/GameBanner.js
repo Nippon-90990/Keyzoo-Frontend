@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { fetchFromStrapi } from '@/lib/strapi';
 import Skeleton from 'react-loading-skeleton';
+import { getStrapiMedia } from '@/lib/getStrapiMedia';
 
 const GameBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -35,11 +36,12 @@ const GameBanner = () => {
   return (
     <div>
       {banners.map((item) => {
-        const getStrapiMedia = (url) => {
-          if (!url) return '';
-          if (url.startsWith('http')) return url;
-          return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
-        };
+
+        // const getStrapiMedia = (url) => {
+        //   if (!url) return '';
+        //   if (url.startsWith('http')) return url;
+        //   return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
+        // };
 
 
         const imgUrl = getStrapiMedia(item.image?.url);
@@ -56,7 +58,7 @@ const GameBanner = () => {
                   fill
                   className="object-center group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-black/40 flex flex-col justify-end p-5 text-white">
+                <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
                   <h3 className="text-xl font-bold mb-1">{item.title}</h3>
                   {/* <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-sm font-semibold px-4 py-1 rounded-full w-fit">
                     {item.button}

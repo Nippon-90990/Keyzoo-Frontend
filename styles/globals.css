@@ -16,6 +16,11 @@
   /* background-color: #121212; */
 }
 
+/* ::selection {
+  background-color: #a78bfa;
+  color: #ffffff;
+} */
+
 body {
   overflow-x: hidden;
 }

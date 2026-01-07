@@ -10,6 +10,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import { fetchFromStrapi } from '@/lib/strapi';
+import { getStrapiMedia } from '@/lib/getStrapiMedia';
 import Link from 'next/link';
 import Skeleton from 'react-loading-skeleton';
 
@@ -28,9 +29,9 @@ const HeroSlider = () => {
   if (!banners.length) {
     return (
       // <SkeletonTheme baseColor="#202020" highlightColor="#444">
-        <div className="rounded-2xl overflow-hidden">
-          <Skeleton height={500} borderRadius={16} />
-        </div>
+      <div className="rounded-2xl overflow-hidden">
+        <Skeleton height={500} borderRadius={16} />
+      </div>
       // </SkeletonTheme>
     );
   }
@@ -46,6 +47,13 @@ const HeroSlider = () => {
           padding: 12px;
           border-radius: 9999px;
           transition: background-color 0.3s;
+        }
+        /* 🔴 HIDE ARROWS ON SMALL DEVICES */
+        @media (max-width: 768px) {
+          .swiper-button-prev,
+          .swiper-button-next {
+            display: none !important;
+          }
         }
         .swiper-button-prev:hover,
         .swiper-button-next:hover {
@@ -84,11 +92,11 @@ const HeroSlider = () => {
       >
         {banners.map((banner) => {
 
-          const getStrapiMedia = (url) => {
-            if (!url) return '';
-            if (url.startsWith('http')) return url;
-            return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
-          };
+          // const getStrapiMedia = (url) => {
+          //   if (!url) return '';
+          //   if (url.startsWith('http')) return url;
+          //   return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
+          // };
 
 
           const imgUrl = getStrapiMedia(banner.image?.url);
@@ -114,7 +122,7 @@ const HeroSlider = () => {
           // );
 
           return (
-            <div className="relative rounded-2xl overflow-hidden shadow-lg">
+            <div className="relative rounded-2xl overflow-hidden">  {/* shadow-lg */}
               <Swiper
                 modules={[Autoplay, Pagination, Navigation]}
                 autoplay={{ delay: 5000, disableOnInteraction: false }}
@@ -133,8 +141,8 @@ const HeroSlider = () => {
                       className="object-center"
                       priority
                     />
-                    <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center px-6">
-                      <h2 className="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">
+                    <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-6">
+                      <h2 className="text-4xl md:text-5xl font-extrabold mb-3">  {/* drop-shadow-lg */}
                         {banner.title}
                       </h2>
                       {/* <p className="text-xl font-semibold bg-[#ff4e00] px-5 py-2 rounded-md inline-block mb-4">
