@@ -1,28 +1,165 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useCurrency from '@/hook/useCurrency';
+import { useRouter } from 'next/router';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+
+const normalizeRegion = (value) => value?.trim().toUpperCase(); // this will help in changing cases.
 
 export default function BeastSelling() {
+
     const { symbol } = useCurrency();
     const [products, setProducts] = useState([]);
+    const [regionOpen, setRegionOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const [regions, setRegions] = useState([]);
+    const [selectedRegion, setSelectedRegion] = useState(null);
+    const [loading, setLoading] = useState(false);
 
+    const router = useRouter();
+    const dropdownRef = useRef(null);
+
+    // Close dropdown on outside click
     useEffect(() => {
-        async function getProducts() {
-            try {
-                const res = await fetchFromStrapi('api/spotify-gift-cards?populate=*');
-                // const resImage = await fetchFromStrapi('/products?populate=image');
-                setProducts(res.data || []);
-                // setProducts(resImage.data || []);
-            } catch (error) {
-                console.error('Failed to fetch products:', error);
+        function handleClickOutside(event) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setRegionOpen(false);
+                setSearch("");
             }
         }
 
-        getProducts();
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, []);
+
+
+    // Filtered regions based on search input
+    const filteredRegions = regions.filter((region) =>
+        region.toLowerCase().includes(search.toLowerCase())
+    );
+
+    // Handle region selection
+    const handleRegionChange = (region) => {
+        const normalized = normalizeRegion(region);
+
+        setSelectedRegion(normalized);
+        setRegionOpen(false);
+
+        router.push(
+            {
+                pathname: router.pathname,
+                query: { region: normalized },
+            },
+            undefined,
+            { shallow: true }
+        );
+    };
+
+    useEffect(() => {
+        if (!router.isReady) return;
+
+        const urlRegion = router.query.region;
+
+        if (urlRegion) {
+            setSelectedRegion(normalizeRegion(urlRegion));
+        }
+    }, [router.isReady]);
+
+    useEffect(() => {
+        async function getAllProducts() {
+            try {
+                setLoading(true);
+                const res = await fetchFromStrapi(
+                    "api/spotify-gift-cards?populate=*"
+                );
+                setProducts(res.data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        getAllProducts();
+    }, []);
+
+
+    useEffect(() => {
+        async function getRegions() {
+            try {
+                const res = await fetchFromStrapi(
+                    "api/spotify-gift-cards?fields[0]=card_region&pagination[pageSize]=200"
+                );
+
+                const set = new Set();
+                res?.data?.forEach(item => {
+                    if (item.card_region) {
+                        set.add(normalizeRegion(item.card_region));
+                    }
+                });
+
+                setRegions(["ALL Regions", ...Array.from(set).sort()]);
+            } catch (err) {
+                console.error("Failed to fetch regions", err);
+            }
+        }
+
+        getRegions();
+    }, []);
+
+    useEffect(() => {
+        if (selectedRegion === "ALL Regions") {
+            // reset to all products
+            fetchFromStrapi("api/spotify-gift-cards?populate=*")
+                .then(res => setProducts(res.data || []));
+            return;
+        }
+
+        async function getFilteredProducts() {
+            try {
+                setLoading(true);
+
+                const res = await fetchFromStrapi(
+                    `api/spotify-gift-cards?populate=*&filters[card_region][$eq]=${encodeURIComponent(
+                        normalizeRegion(selectedRegion)
+                    )}`
+                );
+
+                setProducts(res.data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        getFilteredProducts();
+    }, [selectedRegion]);
+
+    // 1️⃣ LOADING FIRST
+    if (loading) {
+        return (
+            <div className="px-4 md:px-10 py-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <Skeleton
+                            key={i}
+                            height={360}
+                            borderRadius={12}
+                        />
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     if (!products || products.length === 0) {
         return (
@@ -44,6 +181,179 @@ export default function BeastSelling() {
 
     return (
         <div className="px-4 md:px-10 py-8">
+
+            {/* ===== PSN HERO (IMAGE ONLY) ===== */}
+            <section className="relative w-full h-[450px] overflow-hidden rounded-xl mb-10">
+                {/* Background image */}
+                <Image
+                    src="https://static.driffle.com/media-gallery/production/b6919f4f-4679-4c15-9d8a-834471b9d401_psn-bannerwebp"
+                    alt="PSN Banner"
+                    fill
+                    priority
+                    className="object-center"
+                />
+            </section>
+
+            {/* ===== SECTION 2: FILTER BAR ===== */}
+            <section className="rounded-xl mb-10">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center gap-6">
+
+                    {/* Left side */}
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                        <span className="text-lg text-[#ffffff] whitespace-nowrap">
+                            Get PSN Gift cards for
+                        </span>
+
+                        {/* <div className="relative min-w-[350px]">
+                                        <select className="appearance-none w-full h-[44px] bg-[#3a3a3a] text-white text-sm px-4 pr-10 rounded-lg leading-[44px] outline-none">
+                                            <option value="IN">India</option>
+                                            <option value="US">United States</option>
+                                            <option value="UK">United Kingdom</option>
+                                            <option value="PL">Poland</option>
+                                        </select>
+            
+                                        {/* Arrow 
+                                        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/70">
+                                            <svg
+                                                width="14"
+                                                height="14"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2.5"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
+                                                <path d="M6 9l6 6 6-6" />
+                                            </svg>
+                                        </div>
+                                    </div> */}
+
+                        <div ref={dropdownRef} className="relative min-w-[400px]">
+                            {/* Trigger */}
+                            <button onClick={() => setRegionOpen(!regionOpen)} className="cursor-pointer w-full h-[50px] bg-[#3a3a3a] text-white px-4 rounded-lg flex items-center justify-between border-none outline-none">
+                                <span className="text-sm">{selectedRegion || "Select Region"}</span>
+                                <svg
+                                    className={`w-4 h-4 transition-transform ${regionOpen ? "rotate-180" : ""
+                                        }`}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown */}
+                            {/* {regionOpen && (
+                                            <div
+                                                className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl max-h-[260px] overflow-y-auto border border-white/10 no-scrollbar">
+                                                {regions.map((region) => (
+                                                    <button
+                                                        key={region} onClick={() => {
+                                                            setSelectedRegion(region);
+                                                            setRegionOpen(false);
+            
+                                                            router.push(
+                                                                {
+                                                                    pathname: router.pathname,
+                                                                    query: region === "ALL Regions" ? {} : { region },
+                                                                },
+                                                                undefined,
+                                                                { shallow: true }
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-4 py-3 text-sm hover:bg-[#3a3a3a] transition cursor-pointer ${selectedRegion === region ? "bg-[#3a3a3a] text-white" : "text-white/90"}`}>
+                                                        {region}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )} */}
+
+                            {regionOpen && (
+                                <div className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl border border-white/10">
+
+                                    {/* SEARCH INPUT */}
+                                    <div className="p-3 border-b border-white/10">
+                                        <input
+                                            autoFocus
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            placeholder="Search region..."
+                                            className="w-full bg-[#1f1f1f] text-white text-sm px-3 py-2 rounded-md outline-none"
+                                        />
+                                    </div>
+
+                                    {/* OPTIONS */}
+                                    <div className="max-h-[220px] overflow-y-auto no-scrollbar">
+                                        {filteredRegions.length > 0 ? (
+                                            filteredRegions.map((region) => (
+                                                <button
+                                                    key={region}
+                                                    onClick={() => {
+                                                        handleRegionChange(region);
+                                                        setSearch("");
+                                                    }}
+                                                    className={`w-full text-left px-4 py-3 text-sm transition
+                          ${selectedRegion === region
+                                                            ? "bg-[#3a3a3a] text-white"
+                                                            : "text-white/90 hover:bg-[#3a3a3a]"}
+                        `}
+                                                >
+                                                    {region}
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <div className="px-4 py-3 text-sm text-white/50">
+                                                No region found
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+
+
+                    </div>
+
+                    {/* Divider */}
+                    <div className="hidden md:block w-px h-6 bg-white/20" />
+
+                    {/* Right side */}
+                    <div className="flex items-center gap-3 text-sm text-[#ffffff]">
+                        <span className="text-lg mr-1">Top regions</span>
+
+                        {["Poland", "United States", "United Kingdom"].map((region) => {
+                            const normalized = normalizeRegion(region);
+
+                            return (
+                                <button key={region} className={`px-4 py-1.5 rounded-full transition text-white ${selectedRegion === normalized ? "bg-[#3a3a3a]" : "bg-[#1f1f1f] hover:bg-[#2a2a2a]"}`}
+                                    onClick={() => {
+                                        setSelectedRegion(normalized);
+
+                                        router.push(
+                                            {
+                                                pathname: router.pathname,
+                                                query: { region: normalized },
+                                            },
+                                            undefined,
+                                            { shallow: true }
+                                        );
+                                    }}>
+                                    {region}
+                                </button>
+                            );
+                        })}
+
+                    </div>
+
+                </div>
+            </section>
+
             <section className="my-0">
                 <h2 className="text-xl font-bold mb-4 dark:text-white">Best Selling Games</h2>
 
