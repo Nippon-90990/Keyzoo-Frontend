@@ -186,12 +186,14 @@ export default function BeastSelling() {
             <section className="relative w-full h-[450px] overflow-hidden rounded-xl mb-10">
                 {/* Background image */}
                 <Image
-                    src="https://static.driffle.com/media-gallery/production/b6919f4f-4679-4c15-9d8a-834471b9d401_psn-bannerwebp"
+                    src={"https://res.cloudinary.com/dblttl9bh/image/upload/v1767874168/Gemini_Generated_Image_lpxk5wlpxk5wlpxk_65236b78f2.png"}
                     alt="PSN Banner"
                     fill
                     priority
-                    className="object-center"
+                    className="object-cover"
                 />
+
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-black/40" />
             </section>
 
             {/* ===== SECTION 2: FILTER BAR ===== */}

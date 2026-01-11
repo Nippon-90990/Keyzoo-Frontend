@@ -27,6 +27,7 @@ import "swiper/css/navigation"; // ✅ import navigation styles
 import ErrorPage from "next/error";
 
 
+
 export async function getServerSideProps({ params }) {
     const { slug } = params;
 
