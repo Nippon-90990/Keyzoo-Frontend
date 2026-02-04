@@ -7,6 +7,7 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import Image from 'next/image';
 import Link from 'next/link';
 import useCurrency from '@/hook/useCurrency';
+import HoverCard from '@/components/HoverCard';
 
 export default function ProductCarousel() {
     const { symbol } = useCurrency();
@@ -86,7 +87,11 @@ export default function ProductCarousel() {
                                     )}
                                 </div>
                                 <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
-                                    <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
+                                    <HoverCard title={item.title}>
+                                        <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">
+                                            {item.title}
+                                        </h3>
+                                    </HoverCard>
                                     <h3 className="text-lg font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
                                     <p className="text-lg text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
                                         {symbol} {Number(item.discountPrice).toFixed(2)}

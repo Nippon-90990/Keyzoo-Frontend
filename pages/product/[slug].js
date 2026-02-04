@@ -25,7 +25,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from "swiper/modules"; // ✅ import Navigation
 import "swiper/css/navigation"; // ✅ import navigation styles
 import { platformIcons } from "@/lib/platformIcons";
-import Tooltip from "@/components/Tooltip";
+import HoverCard from "@/components/HoverCard";
 
 // export async function getServerSideProps({ params }) {
 //   const { slug } = params;
@@ -166,6 +166,7 @@ export default function ProductPage({ product }) {
   //     : 0; // fallback to 0 if no discount
 
 
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="min-h-screen p-4 lg:p-6">
@@ -440,45 +441,45 @@ export default function ProductPage({ product }) {
           {/* Feature Boxes */}
           <div className="grid grid-cols-3 gap-0 mt-3">
             {/* Instant Delivery */}
-            <Tooltip text="Product code will be delivered instantly.">
-            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
-              <div className="">
-                {/* <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" /> */}
-                <svg className="w-6 h-6 text-blue-500 fill-current">
-                  <use xlinkHref="/sprit/icons.svg#thunder"></use>
-                </svg>
+            <HoverCard title="Product code will be delivered instantly.">
+              <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
+                <div className="">
+                  {/* <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" /> */}
+                  <svg className="w-6 h-6 text-blue-500 fill-current">
+                    <use xlinkHref="/sprit/icons.svg#thunder"></use>
+                  </svg>
 
+                </div>
+                <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
               </div>
-              <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
-            </div>
-            </Tooltip>
+            </HoverCard>
 
             {/* 24/7 Support */}
-            <Tooltip text="Get prompt assistance from our dedicated support team.">
-            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
-              <div className="">
-                {/* <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" /> */}
-                <svg className="w-6 h-6 text-[#1cc54c] fill-current">
-                  <use xlinkHref="/sprit/icons.svg#support-agent"></use>
-                </svg>
+            <HoverCard title="Get prompt assistance from our dedicated support team.">
+              <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
+                <div className="">
+                  {/* <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" /> */}
+                  <svg className="w-6 h-6 text-[#1cc54c] fill-current">
+                    <use xlinkHref="/sprit/icons.svg#support-agent"></use>
+                  </svg>
+                </div>
+                <span className="text-xs lg:text-sm text-white">24/7 Support</span>
               </div>
-              <span className="text-xs lg:text-sm text-white">24/7 Support</span>
-            </div>
-            </Tooltip>
+            </HoverCard>
 
             {/* Verified Sellers */}
-            <Tooltip text="Buy confidently from verified and reliable sellers.">
-            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
-              <div className="">
-                {/* <MdVerified className="text-xl lg:text-3xl text-[#359dff]" /> */}
-                <svg className="w-6 h-6">
-                  <use xlinkHref="/sprit/icons.svg#verified-filled"></use>
-                </svg>
+            <HoverCard title="Buy confidently from verified and reliable sellers.">
+              <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
+                <div className="">
+                  {/* <MdVerified className="text-xl lg:text-3xl text-[#359dff]" /> */}
+                  <svg className="w-6 h-6">
+                    <use xlinkHref="/sprit/icons.svg#verified-filled"></use>
+                  </svg>
+                </div>
+                <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
               </div>
-              <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
-            </div>
-            </Tooltip>
-            
+            </HoverCard>
+
           </div>
         </div>
       </div>
@@ -546,81 +547,101 @@ export default function ProductPage({ product }) {
       </>)}
 
       {/* Product Description */}
-      <div className="bg-[#1a1a1a] p-3 lg:p-4 rounded-xl mt-4 lg:mt-6 text-xs lg:text-sm border border-[#2a2a2a] max-w-[1500px] mx-auto">
-        <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 dark:text-white">Product description</h2>
-        <div className="font-semibold mb-5 text-lg">{product.title}</div>
+      <div className="relative bg-[#1a1a1a] p-3 lg:p-4 rounded-xl mt-4 lg:mt-6 text-xs lg:text-sm border border-[#2a2a2a] max-w-[1500px] mx-auto">
+        <div className={`
+      transition-all duration-500 ease-in-out
+      ${expanded ? "max-h-[5000px]" : "max-h-[260px] overflow-hidden"}
+    `}>
+          <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 dark:text-white">Product description</h2>
+          <div className="font-semibold mb-5 text-lg">{product.title}</div>
 
-        <div className="flex gap-3.5">
-          {Tags.gametag_1 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_1}</div>)}
-          {Tags.gametag_2 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_2}</div>)}
-          {Tags.gametag_3 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_3}</div>)}
-          {Tags.gametag_4 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_4}</div>)}
-          {Tags.gametag_5 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_5}</div>)}
-          {Tags.gametag_6 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_6}</div>)}
-          {Tags.gametag_7 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_7}</div>)}
-          {Tags.gametag_8 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_8}</div>)}
-          {Tags.gametag_9 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_9}</div>)}
-          {Tags.gametag_10 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_10}</div>)}
-          {Tags.gametag_11 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_11}</div>)}
-          {Tags.gametag_12 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_12}</div>)}
-          {Tags.gametag_13 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_13}</div>)}
-          {Tags.gametag_14 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_14}</div>)}
-          {Tags.gametag_15 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_15}</div>)}
-        </div>
-
-        {/* <div className="mt-5"><p className="text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">{product.description}</p></div> */}
-        <div className="mt-5">
-          <ReactMarkdown
-            components={{
-              h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
-              strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
-              ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
-              li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
-              p: ({ node, ...props }) => <p className="mb-2 leading-relaxed text-[#bfbfbf]" {...props} />,   //importent
-            }}
-          >
-            {product?.description}
-          </ReactMarkdown>
-        </div>
-
-        {product.descriptionkey && (<><div className="mt-5 text-md font-bold">Key Features</div>
-
-          <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
-            <div className="ml-8 justify-center">
-              <ReactMarkdown
-                components={{
-                  h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
-                  strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
-                  ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
-                  li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
-                  p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,   //importent
-                }}
-              >
-                {product?.descriptionkey}
-              </ReactMarkdown>
-            </div>
-          </div></>)}
-
-        {product?.editiondescription && (<div>
-          <div className="mt-5 text-md font-bold">{product?.editiontitle}</div>
-
-          <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
-            <div className="ml-8 justify-center">
-              <ReactMarkdown
-                components={{
-                  h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
-                  strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
-                  ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
-                  li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
-                  p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,   //importent
-                }}
-              >
-                {product?.editiondescription}
-              </ReactMarkdown>
-            </div>
+          <div className="flex gap-3.5">
+            {Tags.gametag_1 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_1}</div>)}
+            {Tags.gametag_2 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_2}</div>)}
+            {Tags.gametag_3 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_3}</div>)}
+            {Tags.gametag_4 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_4}</div>)}
+            {Tags.gametag_5 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_5}</div>)}
+            {Tags.gametag_6 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_6}</div>)}
+            {Tags.gametag_7 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_7}</div>)}
+            {Tags.gametag_8 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_8}</div>)}
+            {Tags.gametag_9 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_9}</div>)}
+            {Tags.gametag_10 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_10}</div>)}
+            {Tags.gametag_11 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_11}</div>)}
+            {Tags.gametag_12 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_12}</div>)}
+            {Tags.gametag_13 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_13}</div>)}
+            {Tags.gametag_14 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_14}</div>)}
+            {Tags.gametag_15 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_15}</div>)}
           </div>
-        </div>)}
 
+          {/* <div className="mt-5"><p className="text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">{product.description}</p></div> */}
+          <div className="mt-5">
+            <ReactMarkdown
+              components={{
+                h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
+                strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
+                ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
+                li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
+                p: ({ node, ...props }) => <p className="mb-2 leading-relaxed text-[#bfbfbf]" {...props} />,   //importent
+              }}
+            >
+              {product?.description}
+            </ReactMarkdown>
+          </div>
+
+          {product.descriptionkey && (<><div className="mt-5 text-md font-bold">Key Features</div>
+
+            <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
+              <div className="ml-8 justify-center">
+                <ReactMarkdown
+                  components={{
+                    h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
+                    strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
+                    ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
+                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
+                    p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,   //importent
+                  }}
+                >
+                  {product?.descriptionkey}
+                </ReactMarkdown>
+              </div>
+            </div></>)}
+
+          {product?.editiondescription && (<div>
+            <div className="mt-5 text-md font-bold">{product?.editiontitle}</div>
+
+            <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
+              <div className="ml-8 justify-center">
+                <ReactMarkdown
+                  components={{
+                    h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
+                    strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
+                    ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
+                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
+                    p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,   //importent
+                  }}
+                >
+                  {product?.editiondescription}
+                </ReactMarkdown>
+              </div>
+            </div>
+          </div>)}
+        </div>
+
+        {/* Fade gradient (only when collapsed) */}
+        {!expanded && (
+          // <div className="pointer-events-none absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-[#1a1a1a] to-transparent" />
+          <div className={`pointer-events-none absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/90 via-[#1a1a1a]/70 to-transparent transition-all duration-500 ease-in-out ${expanded ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`} />
+        )}
+
+        {/* Toggle button */}
+        <div className="relative z-10 flex justify-start">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="mt-4 text-[0.95rem] font-medium text-white/80 hover:text-white transition"
+          >
+            {expanded ? "Read less" : "Read more"}
+          </button>
+        </div>
 
       </div>
 

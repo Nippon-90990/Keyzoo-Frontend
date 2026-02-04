@@ -161,7 +161,7 @@ import { Search, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
+import { FaShoppingCart, FaUserCircle, FaHeart } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import UserMenu from "./UserMenu";
 import LiveSearch from "./LiveSearch";
@@ -243,6 +243,15 @@ export default function Header() {
           >
             <Search className="h-5 w-5 text-white" />
           </button>
+
+          {/* Cart */}
+          <Link
+            href="/favourites"
+            className="p-2 rounded-md hover:bg-neutral-800 transition relative shrink-0"
+            aria-label="View cart"
+          >
+            <FaHeart className="text-xl text-white" />
+          </Link>
 
           {/* Cart */}
           <Link
