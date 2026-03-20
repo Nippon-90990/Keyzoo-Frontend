@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import { React, useRef, useMemo } from "react";
 import { useState, useEffect } from "react";
 import { IoStarHalfSharp, IoStarSharp } from "react-icons/io5";
 import { FaNoteSticky } from "react-icons/fa6";
@@ -26,6 +26,7 @@ import { Navigation } from "swiper/modules"; // ✅ import Navigation
 import "swiper/css/navigation"; // ✅ import navigation styles
 import { platformIcons } from "@/lib/platformIcons";
 import HoverCard from "@/components/HoverCard";
+import { getStrapiMedia } from "@/lib/media";
 
 // export async function getServerSideProps({ params }) {
 //   const { slug } = params;
@@ -40,26 +41,45 @@ import HoverCard from "@/components/HoverCard";
 //   };
 // }
 
+// this is for var not region
+// export async function getServerSideProps({ params }) {
+//   const { slug } = params;
+
+//   // Fetch product with all relations (including variations)
+//   const res = await fetchFromStrapi(
+//     `api/products?filters[slug][$eq]=${slug}&populate=*`
+//   );
+
+//   const product = res?.data?.[0] || null;
+
+//   return {
+//     props: {
+//       product,
+//     },
+//   };
+// }
 
 export async function getServerSideProps({ params }) {
   const { slug } = params;
 
-  // Fetch product with all relations (including variations)
-  const res = await fetchFromStrapi(
+  const productRes = await fetchFromStrapi(
     `api/products?filters[slug][$eq]=${slug}&populate=*`
   );
 
-  const product = res?.data?.[0] || null;
+  const regionsRes = await fetchFromStrapi(
+    `api/regions` // 👈 your region collection
+  );
 
   return {
     props: {
-      product,
+      product: productRes?.data?.[0] || null,
+      regionsData: regionsRes?.data || [],
     },
   };
 }
 
 
-export default function ProductPage({ product }) {
+export default function ProductPage({ product, regionsData }) {
 
   // Destructure minimum and recommended requirements safely and languages also...
   const minimumRequirements = product?.minimumRequirement || {};
@@ -69,13 +89,45 @@ export default function ProductPage({ product }) {
   const Subtitles = product?.subtitles_language || {};
   const Tags = product?.game_tag_seo || [];
   const relatedProducts = product?.relatedProducts || [];
+  const relatedRegionProducts = product?.relatedRegionProducts || [];
 
+  const allEditions = [product, ...relatedProducts];
+
+  const uniqueEditions = Array.from(
+    new Map(allEditions.map((p) => [p.slug, p])).values()
+  );
+
+  const allVariants = useMemo(() => [
+    product,
+    ...relatedProducts,
+    ...relatedRegionProducts,
+  ], [product, relatedProducts, relatedRegionProducts]);
+
+
+
+  const [regionOpen, setRegionOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [regions, setRegions] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const dropdownRef = useRef(null);
 
   // const isOutOfStock = product.isAvailable === false || product.stock === 0;
 
   // const displayTitle = selectedVariation
   //   ? `${product.title} - ${selectedVariation.name}`
   //   : product.title;
+
+  const filteredRegions = regions
+    .filter((region) =>
+      region.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((region) =>
+      allVariants.some(
+        (p) =>
+          p.region?.toLowerCase() === region.toLowerCase() &&
+          p.var_title === product.var_title
+      )
+    );
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -130,6 +182,24 @@ export default function ProductPage({ product }) {
 
   if (!product) return null;
 
+  // handle click outside for region dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setRegionOpen(false);
+        setSearch("");
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // if (!product) return <div>Product not found.</div>;
 
   // const { attributes } = product;
@@ -137,11 +207,17 @@ export default function ProductPage({ product }) {
   //   ? `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${attributes.image.data.attributes.url}`
   //   : null;
 
-  const getStrapiMedia = (url) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
-  };
+
+  //=======================================================================================//
+  // this is comment out because i use cloudinery. if not clouninery then uncomment it.
+
+  // const getStrapiMedia = (url) => {
+  //   if (!url) return '';
+  //   if (url.startsWith('http')) return url;
+  //   return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
+  // };
+
+  //=======================================================================================//
 
 
   const imgUrl = getStrapiMedia(product.image?.url);
@@ -167,6 +243,72 @@ export default function ProductPage({ product }) {
 
 
   const [expanded, setExpanded] = useState(false);
+
+  // this will handle region change
+  // useEffect(() => {
+  //   if (!product) return;
+
+  //   let regionSet = new Set();
+
+  //   // current product
+  //   if (product.region) {
+  //     regionSet.add(product.region);
+  //   }
+
+  //   // region variations
+  //   relatedRegionProducts.forEach((p) => {
+  //     if (p.region) {
+  //       regionSet.add(p.region);
+  //     }
+  //   });
+
+  //   setRegions(Array.from(regionSet));
+  //   setSelectedRegion(product.region);
+
+  // }, [product, relatedRegionProducts]);
+
+  useEffect(() => {
+    if (!allVariants.length) return;
+
+    const regionSet = new Set(
+      allVariants.map((p) => p.region).filter(Boolean)
+    );
+
+    setRegions(Array.from(regionSet));
+    setSelectedRegion(product.region || null);
+  }, [product, allVariants]);
+
+  const handleRegionChange = (region) => {
+    if (region === product.region) return;
+
+    const currentEdition = product.var_title;
+
+    const matched = allVariants.find(
+      (p) =>
+        p.region?.toLowerCase() === region.toLowerCase() &&
+        p.var_title === currentEdition
+    );
+
+    if (matched) {
+      router.push(`/product/${matched.slug}`);
+    } else {
+      toast("This combination is not available");
+    }
+
+    setRegionOpen(false);
+  };
+
+  // useEffect(() => {
+  //   if (regionsData?.length) {
+  //     const regionList = regionsData.map((r) => r.name);
+
+  //     setRegions(regionList);
+  //   }
+
+  //   if (product?.region) {
+  //     setSelectedRegion(product.region);
+  //   }
+  // }, [regionsData, product]);
 
   return (
     <div className="min-h-screen p-4 lg:p-6">
@@ -223,6 +365,9 @@ export default function ProductPage({ product }) {
             </div>
           </div>
 
+          {/* this is a devider for visual balance */}
+          <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
+
           {/* Feature Grid - 2 columns on laptop */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4 mt-4 lg:mt-6">
             {/* India Activation */}
@@ -235,7 +380,7 @@ export default function ProductPage({ product }) {
               </div>
               <div>
                 <p className="text-xs lg:text-sm">
-                  Can be activated in <strong>India</strong>
+                  Can be activated in <strong>{product.region}</strong>
                 </p>
                 <a href="#" className="text-[#359dff] text-xs">Check Restrictions</a>
               </div>
@@ -310,6 +455,85 @@ export default function ProductPage({ product }) {
 
           <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
 
+          {/* Region Selector */} {/* i will show it for dekstop only */}
+          <div className="flex items-center gap-4 mt-4">
+            <span className="text-sm text-gray-400">
+              Region
+            </span>
+            <div ref={dropdownRef} className="relative w-[340px]">
+
+              {/* Trigger */}
+              <button
+                onClick={() => setRegionOpen(!regionOpen)}
+                className="w-full bg-[#1a1a1a] border border-[#2e2e2e] text-white px-4 py-2 rounded-lg flex items-center justify-between h-[25px] lg:h-[50px]"
+              >
+                <span className="text-sm">
+                  {selectedRegion || "Select Region"}
+                </span>
+
+                <svg
+                  className={`w-4 h-4 transition-transform ${regionOpen ? "rotate-180" : ""}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+
+              {/* Dropdown */}
+              {regionOpen && (
+                <div className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl border border-white/10">
+
+                  {/* Search */}
+                  <div className="p-3 border-b border-white/10">
+                    <input
+                      autoFocus
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search region..."
+                      className="w-full bg-[#1f1f1f] text-white text-sm px-3 py-2 rounded-md outline-none"
+                    />
+                  </div>
+
+                  {/* Options */}
+                  <div className="max-h-[220px] overflow-y-auto no-scrollbar">
+                    {filteredRegions.length > 0 ? (
+                      filteredRegions.map((region) => (
+                        <button
+                          key={region}
+                          onClick={() => {
+                            handleRegionChange(region);
+                            setSearch("");
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm transition
+                  ${selectedRegion === region
+                              ? "bg-[#3a3a3a] text-white"
+                              : "text-white/90 hover:bg-[#3a3a3a]"
+                            }
+                `}
+                        >
+                          {region}
+                          {/* {selectedRegion === region && (
+                            <span className="text-green-400">✓</span>
+                          )} */}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-white/50">
+                        No region found
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
+
           {/* <div className="mt-4 lg:mt-6">
             {/* <h3 className="text-xs lg:text-sm text-white/60 mb-2">Edition:</h3> */}
 
@@ -351,32 +575,56 @@ export default function ProductPage({ product }) {
           {/* </div> */}
           {/* </div> */}
 
-          {relatedProducts.length > 0 && (<div className="mt-4 lg:mt-6">
-            <h3 className="text-xs lg:text-sm text-white/60 mb-2">Edition:</h3>
+          {product.var_title && (<div className="mt-4 lg:mt-4.5">
+            <h3 className="text-xs lg:text-sm text-white/60 mb-4.5">Edition:</h3>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              {relatedProducts?.map((product) => (
-                <label key={product.slug} className={"w-full sm:w-[200px] cursor-pointer select-none"}>
+              {uniqueEditions?.map((edition) => (
+                <label key={edition.slug} className={"w-full sm:w-[200px] cursor-pointer select-none"}>
                   <input
                     type="radio"
                     name="edition"
-                    value={product.slug}
+                    value={edition.slug}
                     className="peer sr-only"
-                    checked={selectedSlug === product.slug}
+                    checked={selectedSlug === edition.slug}
+                    // onChange={() => {
+                    //   setSelectedSlug(product.slug);
+                    //   router.push(`/product/${product.slug}`);
+                    // }}
                     onChange={() => {
-                      setSelectedSlug(product.slug);
-                      router.push(`/product/${product.slug}`);
+                      if (edition.slug === selectedSlug) return;
+
+                      const matched = allVariants.find(
+                        (p) =>
+                          p.var_title === edition.var_title &&
+                          p.region?.toLowerCase() === selectedRegion?.toLowerCase()
+                      );
+
+                      if (!matched) {
+                        toast("This combination is not available");
+                        return;
+                      }
+
+                      router.push(`/product/${matched.slug}`);
                     }}
                   />
-                  <div className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500">
+                  <div className={`p-3 rounded-xl border bg-[#1a1a1a] transition-all
+  ${selectedSlug === edition.slug
+                      ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
+                      : "border-[#2e2e2e] hover:border-purple-400"
+                    }
+`}>  {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-white">
-                        {product.var_title}
+                      <span className="text-sm font-semibold text-white flex items-center gap-2">
+                        {edition.var_title}
+                        {selectedSlug === edition.slug && (
+                          <span className="text-green-400 text-xs">(Current)</span>
+                        )}
                       </span>
                       {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
                     </div>
                     <div className="mt-1 text-xs text-white/50">
-                      from {symbol}{product.discountPrice}
+                      from {symbol}{edition.discountPrice}
                     </div>
                   </div>
                 </label>
@@ -389,7 +637,7 @@ export default function ProductPage({ product }) {
 
         {/* Right: Pricing Box - Shows on xl screens or as last column on lg */}
         {/* <div className="w-full md:w-[380px] bg-[#111111] rounded-2xl p-4 space-y-4 text-white"> */}
-        <div className="w-full max-w-md mx-auto bg-gradient-to-br from-[#111] to-[#1a1a1a] p-4 rounded-2xl shadow-lg border border-neutral-800 mt-6">
+        <div className="w-full max-w-md mx-auto bg-gradient-to-br from-[#111] to-[#1a1a1a] p-4 rounded-2xl shadow-lg border border-neutral-800 mt-6 self-start sticky top-6">
           {/* Featured Offer */}
           <div>
             <p className="text-xs text-white/70 uppercase font-medium mb-1">Featured Offer</p>
@@ -501,11 +749,12 @@ export default function ProductPage({ product }) {
           {product?.gallery?.map((img, index) => (
             <SwiperSlide key={index} className="flex justify-center">
               <Image
-                src={`${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${img.url}`}
+                // src={`${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${img.url}`}  // this is only for local strapi setup not cloudinary or other cdn
+                src={getStrapiMedia(img.url)}
                 alt={img.name || `Gallery image ${index + 1}`}
                 width={400}
                 height={300}
-                lazzyy="true"
+                loading="lazy"
                 className="rounded-xl object-cover cursor-pointer hover:opacity-90 transition h-[250px] w-[400px]"
               />
             </SwiperSlide>

@@ -251,7 +251,7 @@ export default function NewsletterSection() {
                     )}
                 </AnimatePresence>
 
-                <p className="text-sm text-white mt-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mt-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
                     By subscribing, you agree to receive commercial communications from Driffle.com via email,
                     including personalized updates about products and services offered on our Marketplace.
                 </p>
