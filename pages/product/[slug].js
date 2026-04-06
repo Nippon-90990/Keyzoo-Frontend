@@ -182,6 +182,24 @@ export default function ProductPage({ product, regionsData }) {
 
   if (!product) return null;
 
+  // we will implement it later.
+  // useEffect(() => {
+  //   if (!product) return;
+
+  //   addRecentlyViewed({
+  //     id: product.id,
+  //     title: product.title,
+  //     slug: product.slug,
+  //     type: Type,
+  //     image: product.image,
+  //     price: product.price,
+  //     discountPrice: product.discountPrice,
+  //     platform: product.platform,
+  //     card_region: product.card_region,
+  //     Available: product.Available,
+  //   });
+  // }, [product]);
+
   // handle click outside for region dropdown
   useEffect(() => {
     function handleClickOutside(event) {
@@ -579,60 +597,77 @@ export default function ProductPage({ product, regionsData }) {
             <h3 className="text-xs lg:text-sm text-white/60 mb-4.5">Edition:</h3>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              {uniqueEditions?.map((edition) => (
-                <label key={edition.slug} className={"w-full sm:w-[200px] cursor-pointer select-none"}>
-                  <input
-                    type="radio"
-                    name="edition"
-                    value={edition.slug}
-                    className="peer sr-only"
-                    checked={selectedSlug === edition.slug}
-                    // onChange={() => {
-                    //   setSelectedSlug(product.slug);
-                    //   router.push(`/product/${product.slug}`);
-                    // }}
-                    onChange={() => {
-                      if (edition.slug === selectedSlug) return;
+              {uniqueEditions?.map((edition) => {
 
-                      const matched = allVariants.find(
-                        (p) =>
-                          p.var_title === edition.var_title &&
-                          p.region?.toLowerCase() === selectedRegion?.toLowerCase()
-                      );
+                const isAvailable = edition.Available; // or whatever field indicates availability
 
-                      if (!matched) {
-                        toast("This combination is not available");
-                        return;
-                      }
+                return (
+                  <label key={edition.slug} className={`w-full sm:w-[200px] cursor-pointer select-none ${isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}>
+                    <input
+                      type="radio"
+                      name="edition"
+                      value={edition.slug}
+                      className="peer sr-only"
+                      checked={selectedSlug === edition.slug}
+                      disabled={!isAvailable}
+                      // onChange={() => {
+                      //   setSelectedSlug(product.slug);
+                      //   router.push(`/product/${product.slug}`);
+                      // }}
+                      onChange={() => {
 
-                      router.push(`/product/${matched.slug}`);
-                    }}
-                  />
-                  <div className={`p-3 rounded-xl border bg-[#1a1a1a] transition-all
-  ${selectedSlug === edition.slug
-                      ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
-                      : "border-[#2e2e2e] hover:border-purple-400"
-                    }
-`}>  {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-white flex items-center gap-2">
-                        {edition.var_title}
-                        {selectedSlug === edition.slug && (
-                          <span className="text-green-400 text-xs">(Current)</span>
+                        if (!isAvailable) return;
+                        if (edition.slug === selectedSlug) return;
+
+                        const matched = allVariants.find(
+                          (p) =>
+                            p.var_title === edition.var_title &&
+                            p.region?.toLowerCase() === selectedRegion?.toLowerCase()
+                        );
+
+                        if (!matched) {
+                          toast("This combination is not available");
+                          return;
+                        }
+
+                        router.push(`/product/${matched.slug}`);
+                      }}
+                    />
+
+                    <div className={`p-4 rounded-xl border bg-[#1a1a1a] transition-all flex flex-col justify-between min-h-[90px]
+                      ${!isAvailable
+                        ? "border-gray-700 bg-[#111] text-white/40"
+                        : selectedSlug === edition.slug
+                          ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
+                          : "border-[#2e2e2e] hover:border-purple-400"
+                      }`}>  {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-white flex items-center gap-2">
+                          {edition.var_title}
+
+                          {selectedSlug === edition.slug && isAvailable && (
+                            <span className="text-green-400 text-xs">(Current)</span>
+                          )}
+
+                          {!isAvailable && (
+                            <span className="text-red-400 text-xs">(Out of stock)</span>
+                          )}
+                        </span> {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
+                      </div>
+
+                      <div className="mt-1 text-xs text-white/50 h-[16px]">
+                        {isAvailable ? (
+                          <>from {symbol}{edition.discountPrice}</>
+                        ) : (
+                          "Unavailable"
                         )}
-                      </span>
-                      {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
+                      </div>
                     </div>
-                    <div className="mt-1 text-xs text-white/50">
-                      from {symbol}{edition.discountPrice}
-                    </div>
-                  </div>
-                </label>
-              ))}
+                  </label>);
+              })}
             </div>
           </div>)}
-
-
         </div>
 
         {/* Right: Pricing Box - Shows on xl screens or as last column on lg */}
@@ -886,7 +921,7 @@ export default function ProductPage({ product, regionsData }) {
         <div className="relative z-10 flex justify-start">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="mt-4 text-[0.95rem] font-medium text-white/80 hover:text-white transition"
+            className="mt-4 text-[0.95rem] font-medium text-white/80 hover:text-white transition cursor-pointer"
           >
             {expanded ? "Read less" : "Read more"}
           </button>

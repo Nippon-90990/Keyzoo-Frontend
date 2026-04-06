@@ -1,6 +1,5 @@
 import Image from "next/image";
-import React from "react";
-import { useState, useEffect } from "react";
+import { React, useState, useEffect, useMemo, useRef } from "react";
 import { IoStarHalfSharp, IoStarSharp } from "react-icons/io5";
 import { FaNoteSticky } from "react-icons/fa6";
 import { FaGlobeAmericas, FaMemory } from 'react-icons/fa';
@@ -26,24 +25,29 @@ import { Navigation } from "swiper/modules"; // ✅ import Navigation
 import "swiper/css/navigation"; // ✅ import navigation styles
 import ErrorPage from "next/error";
 import { addRecentlyViewed } from "@/utils/recentlyViewed";
-
+import { getStrapiMedia } from "@/lib/media";
+import HoverCard from "@/components/HoverCard";
 
 export async function getServerSideProps({ params }) {
     const { slug } = params;
 
-    const res = await fetchFromStrapi(`api/play-station-gift-cards?filters[slug][$eq]=${slug}&populate=*`);
-    // const res = await fetchFromStrapi(`api/products?filters[slug][$eq]=${slug}&populate=*`);
-    const product = res.data[0] || null;
-    // const variations = product?.variations || [];
+    const productRes = await fetchFromStrapi(
+        `api/play-station-gift-cards?filters[slug][$eq]=${slug}&populate=*`
+    );
+
+    const regionsRes = await fetchFromStrapi(
+        `api/regions` // 👈 your region collection
+    );
 
     return {
         props: {
-            product,
+            product: productRes?.data?.[0] || null,
+            regionsData: regionsRes?.data || [],
         },
     };
 }
 
-export default function ProductPage({ product }) {
+export default function ProductPage({ product, regionsData }) {
 
     const Type = "psn";     // As slug page parent folder are hardcoded psn so we can set type psn here. We directly inject it here...
 
@@ -54,8 +58,45 @@ export default function ProductPage({ product }) {
     const Interface = product?.interface_language || {};
     const Subtitles = product?.subtitles_language || {};
     const Tags = product?.game_tag_seo || [];
-    const relatedProducts = product?.relatedProducts || [];
     const [ageimage, setAgeimage] = useState(); // Default to true
+
+    // if use this 1286ms but if not 4773ms
+    const relatedProducts = product?.relatedProducts || [];
+    const relatedRegionProducts = product?.relatedRegionProducts || [];
+
+    const allEditions = [product, ...relatedProducts];
+
+
+    // const relatedProducts = (product?.relatedProducts || []).filter(
+    //     (p) => p && p.slug
+    // );
+
+    // const relatedRegionProducts = (product?.relatedRegionProducts || []).filter(
+    //     (p) => p && p.slug
+    // );
+
+    // const allEditions = [product, ...relatedProducts].filter(
+    //     (p) => p && p.slug
+    // );
+
+    const uniqueEditions = Array.from(
+        new Map(allEditions.map((p) => [p.slug, p])).values()
+    );
+
+    const allVariants = useMemo(
+        () =>
+            [product, ...relatedProducts, ...relatedRegionProducts].filter(
+                (p) => p && p.slug
+            ),
+        [product, relatedProducts, relatedRegionProducts]
+    );
+
+
+    const [regionOpen, setRegionOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const [regions, setRegions] = useState([]);
+    const [selectedRegion, setSelectedRegion] = useState(null);
+    const dropdownRef = useRef(null);
 
     // // Option 1: Show based on environment variable
     // useEffect(() => {
@@ -63,9 +104,27 @@ export default function ProductPage({ product }) {
     //     setAgeimage(process.env.NEXT_PUBLIC_SHOW_AGEIMAGE === 'true');
     // }, []);
 
+    const filteredRegions = regions
+        .filter((region) =>
+            region.toLowerCase().includes(search.toLowerCase())
+        )
+        .filter((region) =>
+            allVariants.some(
+                (p) =>
+                    p.region?.toLowerCase() === region.toLowerCase() &&
+                    p.var_title === product.var_title
+            )
+        );
+
     const dispatch = useDispatch();
     const router = useRouter();
     const [selectedSlug, setSelectedSlug] = useState(router.query.slug);
+    const [loading, setLoading] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+
+    const visibleEditions = expanded
+        ? uniqueEditions
+        : uniqueEditions.slice(0, 5);
 
     // update selectedSlug when slug changes in URL
     useEffect(() => {
@@ -78,14 +137,29 @@ export default function ProductPage({ product }) {
         dispatch(addToCart({
             id: product.id,
             title: product.title,
-            region: product.region,
             // gift_tag: product.item,
             item_type_gift: product.item_type,
             price: product.discountPrice,
+            region: product.region,
             image: imgUrl,
             // add more if you want
         }));
         toast.success("Added to cart!");
+    };
+
+    const handleBuyNow = () => {
+        setLoading(true);
+        dispatch(addToCart({
+            id: product.id,
+            title: product.title,
+            // game_tag: product.item,
+            item_type_game: product.item_type,
+            price: product.discountPrice,
+            region: product.region,
+            image: imgUrl,
+            // add more if you want
+        }));
+        router.push('/checkout');
     };
 
     const { symbol } = useCurrency();
@@ -116,29 +190,66 @@ export default function ProductPage({ product }) {
         });
     }, [product]);
 
-    const getStrapiMedia = (url) => {
-        if (!url) return '';
-        if (url.startsWith('http')) return url;
-        return `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${url}`;
-    };
+    // handle click outside for region dropdown
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
+                setRegionOpen(false);
+                setSearch("");
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const imgUrl = getStrapiMedia(product.image?.url);
     const age = getStrapiMedia(product.age?.url);
     const platform = getStrapiMedia(product.platform_image?.url);
 
-    // const discountPercent = Math.round(
-    //   100 - (product.price / product.discountPrice) * 100
-    // );
-
     const discountPercent = Math.round(
         ((product.price - product.discountPrice) / product.price) * 100
     );
 
+    useEffect(() => {
+        if (!allVariants.length) return;
+
+        const regionSet = new Set(
+            allVariants.map((p) => p.region).filter(Boolean)
+        );
+
+        setRegions(Array.from(regionSet));
+        setSelectedRegion(product.region || null);
+    }, [product, allVariants]);
+
+    const handleRegionChange = (region) => {
+        if (region === product.region) return;
+
+        const currentEdition = product.var_title;
+
+        const matched = allVariants.find(
+            (p) =>
+                p.region?.toLowerCase() === region.toLowerCase() &&
+                p.var_title === currentEdition
+        );
+
+        if (matched) {
+            router.push(`/product/${matched.slug}`);
+        } else {
+            toast("This combination is not available");
+        }
+
+        setRegionOpen(false);
+    };
 
     return (
         <div className="min-h-screen p-4 lg:p-6">
             <div className="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[260px_1fr_380px] gap-4 lg:gap-6 xl:gap-8">
-
 
                 {/* Left: Cover Image - Fixed width for laptop and up */}
                 <div className="w-full md:w-[260px] flex justify-center mx-auto">
@@ -169,7 +280,7 @@ export default function ProductPage({ product }) {
 
                     {/* Tags + Ratings */}
                     <div className="flex flex-wrap items-center gap-2 text-sm mt-2.5">
-                        <span className="bg-[#ff7f6a] px-2.5 py-1 rounded font-medium text-white">{product.item_type}</span>
+                        <span className="bg-[#003791] px-2.5 py-1 rounded font-medium text-white">{product.item_type}</span>
                         <span className="bg-[#2a2a2a] px-2.5 py-1 rounded font-medium text-white">{product.item}</span>
                         <div className="flex items-center gap-2 text-yellow-400 ml-0 sm:ml-2">
                             <span className="w-[1px] h-[30px] bg-[#ffffff1a]"></span>
@@ -203,7 +314,7 @@ export default function ProductPage({ product }) {
                             </div>
                             <div>
                                 <p className="text-xs lg:text-sm">
-                                    Can be activated in <strong>India</strong>
+                                    Can be activated in <strong>{product.region}</strong>
                                 </p>
                                 <a href="#" className="text-[#359dff] text-xs">Check Restrictions</a>
                             </div>
@@ -260,62 +371,189 @@ export default function ProductPage({ product }) {
 
                     <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
 
-                    {relatedProducts.length > 0 && (<div className="mt-4 lg:mt-6">
+                    {/* Region Selector */} {/* i will show it for dekstop only */}
+                    <div className="flex items-center gap-4 mt-4">
+                        <span className="text-sm text-gray-400">
+                            Region
+                        </span>
+                        <div ref={dropdownRef} className="relative w-[340px]">
+
+                            {/* Trigger */}
+                            <button
+                                onClick={() => setRegionOpen(!regionOpen)}
+                                className="w-full bg-[#1a1a1a] border border-[#2e2e2e] text-white px-4 py-2 rounded-lg flex items-center justify-between h-[25px] lg:h-[50px]"
+                            >
+                                <span className="text-sm">
+                                    {selectedRegion || "Select Region"}
+                                </span>
+
+                                <svg
+                                    className={`w-4 h-4 transition-transform ${regionOpen ? "rotate-180" : ""}`}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown */}
+                            {regionOpen && (
+                                <div className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl border border-white/10">
+
+                                    {/* Search */}
+                                    <div className="p-3 border-b border-white/10">
+                                        <input
+                                            autoFocus
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            placeholder="Search region..."
+                                            className="w-full bg-[#1f1f1f] text-white text-sm px-3 py-2 rounded-md outline-none"
+                                        />
+                                    </div>
+
+                                    {/* Options */}
+                                    <div className="max-h-[220px] overflow-y-auto no-scrollbar">
+                                        {filteredRegions.length > 0 ? (
+                                            filteredRegions.map((region) => (
+                                                <button
+                                                    key={region}
+                                                    onClick={() => {
+                                                        handleRegionChange(region);
+                                                        setSearch("");
+                                                    }}
+                                                    className={`w-full text-left px-4 py-3 text-sm transition
+                  ${selectedRegion === region
+                                                            ? "bg-[#3a3a3a] text-white"
+                                                            : "text-white/90 hover:bg-[#3a3a3a]"
+                                                        }
+                `}
+                                                >
+                                                    {region}
+                                                    {/* {selectedRegion === region && (
+                            <span className="text-green-400">✓</span>
+                          )} */}
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <div className="px-4 py-3 text-sm text-white/50">
+                                                No region found
+                                            </div>
+                                        )}
+                                    </div>
+
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
+
+                    {product.var_title && (<div className="mt-4 lg:mt-6">
                         <h3 className="text-xs lg:text-sm text-white/60 mb-2">Edition:</h3>
 
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            {/* Option 1 */}
-                            {relatedProducts?.map((product) => (
-                                <label key={product.slug} className="w-full sm:w-[200px] cursor-pointer select-none">
-                                    <input
-                                        type="radio"
-                                        name="edition"
-                                        value={product.slug}
-                                        className="peer sr-only"
-                                        // checked={router.query.slug === product.slug}
-                                        // onChange={() => router.push(`/gift-card/${product.slug}`)}
-                                        checked={selectedSlug === product.slug}
-                                        onChange={() => {
-                                            setSelectedSlug(product.slug);
-                                            router.push(`/store/category/psn/${product.slug}`);
-                                        }}
-                                    // defaultChecked
-                                    />
-                                    <div className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm font-semibold text-white">{product.var_title}</span>
-                                            {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
-                                        </div>
-                                        <div className="mt-1 text-sm text-white/50">from {symbol}{product.discountPrice}</div>
-                                    </div>
-                                </label>
-                            ))}
+                        {/* <div className="flex flex-col sm:flex-row gap-3"> */}
+                        <div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 items-stretch justify-items-center">
+                                {/* Option 1 */}
+                                {visibleEditions?.map((edition) => {
 
-                            {/* Option 2 */}
-                            {/*
-                                <label className="w-full sm:w-[200px] cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="edition"
-                                        value="standard"
-                                        className="peer sr-only"
-                                    />
-                                    <div className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500">
-                                        <div className="flex items-center justify-between">
-                                                <span className="text-sm font-semibold text-white">Standard</span>
-                                                <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div>
-                                        </div>
-                                    <div className="mt-1 text-xs text-white/50">from ₹1,092.34</div>
-                                    </div>
-                                </label> 
-                            */}
+                                    const isAvailable = edition.Available; // or whatever field indicates availability
+
+                                    return (
+                                        <label key={edition.slug} className={`w-full cursor-pointer select-none ${isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}>
+                                            <input
+                                                type="radio"
+                                                name="edition"
+                                                value={edition.slug}
+                                                className="peer sr-only"
+                                                // checked={router.query.slug === product.slug}
+                                                // onChange={() => router.push(`/gift-card/${product.slug}`)}
+                                                checked={selectedSlug === edition.slug}
+                                                disabled={!isAvailable}
+                                                onChange={() => {
+
+                                                    if (!isAvailable) return;
+                                                    if (edition.slug === selectedSlug) return;
+
+                                                    const matched = allVariants.find(
+                                                        (p) =>
+                                                            p.var_title === edition.var_title &&
+                                                            p.region?.toLowerCase() === selectedRegion?.toLowerCase()
+                                                    );
+
+                                                    if (!matched) {
+                                                        toast("This combination is not available");
+                                                        return;
+                                                    }
+
+                                                    router.push(`/store/category/gift-card/psn/${matched.slug}`);
+                                                }}
+                                            />
+
+                                            <div className={`p-3 rounded-xl border bg-[#1a1a1a] transition-all flex flex-col justify-between min-h-[90px]
+                      ${!isAvailable
+                                                    ? "border-gray-700 bg-[#111] text-white/40"
+                                                    : selectedSlug === edition.slug
+                                                        ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
+                                                        : "border-[#2e2e2e] hover:border-purple-400"
+                                                }`}>  {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}
+
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-semibold text-white flex items-center gap-2">
+                                                        {edition.var_title}
+
+                                                        {selectedSlug === edition.slug && isAvailable && (
+                                                            <span className="text-green-400 text-xs">(Current)</span>
+                                                        )}
+
+                                                        {!isAvailable && (
+                                                            <span className="text-red-400 text-xs">(Out of stock)</span>
+                                                        )}
+                                                    </span> {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
+                                                </div>
+
+                                                <div className="mt-1 text-xs text-white/50 h-[16px]">
+                                                    {isAvailable ? (
+                                                        <>from {symbol}{edition.discountPrice}</>
+                                                    ) : (
+                                                        "Unavailable"
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                            {/* BUTTON */}
+                            {uniqueEditions.length > 5 && !expanded && (
+                                <div className="flex justify-center mt-4">
+                                    <button
+                                        onClick={() => setExpanded(true)}
+                                        className="flex items-center gap-2 bg-[#2a2a2a] hover:bg-[#333] text-white px-4 py-2 rounded-full text-sm transition-all duration-300 hover:scale-105 active:scale-95"
+                                    >
+                                        See all
+
+                                        <svg
+                                            className="w-4 h-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>)}
                 </div>
 
                 {/* Right: Pricing Box - Shows on xl screens or as last column on lg */}
                 {/* <div className="w-full md:w-[380px] bg-[#111111] rounded-2xl p-4 space-y-4 text-white"> */}
-                <div className="w-full max-w-md mx-auto bg-gradient-to-br from-[#111] to-[#1a1a1a] p-4 rounded-2xl shadow-lg border border-neutral-800 mt-6">
+                <div className="w-full max-w-md mx-auto bg-gradient-to-br from-[#111] to-[#1a1a1a] p-4 rounded-2xl shadow-lg border border-neutral-800 mt-6 self-start sticky top-6">
                     {/* Featured Offer */}
                     <div>
                         <p className="text-xs text-white/70 uppercase font-medium mb-1">Featured Offer</p>
@@ -367,28 +605,45 @@ export default function ProductPage({ product }) {
                     {/* Feature Boxes */}
                     <div className="grid grid-cols-3 gap-0 mt-3">
                         {/* Instant Delivery */}
-                        <div className="bg-neutral-800 px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
-                            <div className="">
-                                <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" />
+                        <HoverCard title="Product code will be delivered instantly.">
+                            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-l-lg flex items-center justify-start gap-2">
+                                <div className="">
+                                    {/* <AiFillThunderbolt className="text-lg lg:text-xl text-yellow-500" /> */}
+                                    <svg className="w-6 h-6 text-blue-500 fill-current">
+                                        <use xlinkHref="/sprit/icons.svg#thunder"></use>
+                                    </svg>
+
+                                </div>
+                                <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
                             </div>
-                            <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
-                        </div>
+                        </HoverCard>
 
                         {/* 24/7 Support */}
-                        <div className="bg-neutral-800 px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
-                            <div className="">
-                                <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" />
+                        <HoverCard title="Get prompt assistance from our dedicated support team.">
+                            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 flex items-center justify-start gap-2">
+                                <div className="">
+                                    {/* <MdSupportAgent className="text-xl lg:text-3xl text-[#1cc54c]" /> */}
+                                    <svg className="w-6 h-6 text-[#1cc54c] fill-current">
+                                        <use xlinkHref="/sprit/icons.svg#support-agent"></use>
+                                    </svg>
+                                </div>
+                                <span className="text-xs lg:text-sm text-white">24/7 Support</span>
                             </div>
-                            <span className="text-xs lg:text-sm text-white">24/7 Support</span>
-                        </div>
+                        </HoverCard>
 
                         {/* Verified Sellers */}
-                        <div className="bg-neutral-800 px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
-                            <div className="">
-                                <MdVerified className="text-xl lg:text-3xl text-[#359dff]" />
+                        <HoverCard title="Buy confidently from verified and reliable sellers.">
+                            <div className="bg-[#1e1e1e] px-3 py-2 lg:py-3 rounded-r-lg flex items-center justify-start gap-2">
+                                <div className="">
+                                    {/* <MdVerified className="text-xl lg:text-3xl text-[#359dff]" /> */}
+                                    <svg className="w-6 h-6">
+                                        <use xlinkHref="/sprit/icons.svg#verified-filled"></use>
+                                    </svg>
+                                </div>
+                                <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
                             </div>
-                            <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
-                        </div>
+                        </HoverCard>
+
                     </div>
                 </div>
             </div>

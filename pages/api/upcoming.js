@@ -197,7 +197,12 @@
 
 
 
+import { getIGDBToken } from "@/lib/igdbToken";
+
 export default async function handler(req, res) {
+
+    const token = await getIGDBToken();
+
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 50;
@@ -237,8 +242,8 @@ export default async function handler(req, res) {
         const response = await fetch("https://api.igdb.com/v4/games", {
             method: "POST",
             headers: {
-                "Client-ID": process.env.NEXT_PUBLIC_IGDB_CLIENT_ID,
-                Authorization: `Bearer ${process.env.NEXT_PUBLIC_IGDB_ACCESS_TOKEN}`,
+                "Client-ID": process.env.IGDB_CLIENT_ID,
+                Authorization: `Bearer ${token}`,
                 Accept: "application/json",
             },
             body: `

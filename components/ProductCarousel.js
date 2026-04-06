@@ -8,10 +8,61 @@ import Image from 'next/image';
 import Link from 'next/link';
 import useCurrency from '@/hook/useCurrency';
 import HoverCard from '@/components/HoverCard';
+import toast from "react-hot-toast";
 
 export default function ProductCarousel() {
     const { symbol } = useCurrency();
     const [products, setProducts] = useState([]);
+    const [notified, setNotified] = useState({});
+
+    const handleNotify = async (item) => {
+        try {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const token = localStorage.getItem("jwt");
+
+            if (!user || !token) {
+                toast.error("Please login first");
+                return;
+            }
+
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_STRAPI_URL}api/stock-alerts`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        data: {
+                            product: item.id,
+                        },
+                    }),
+                }
+            );
+
+            const data = await res.json();
+
+            // console.log("API RESPONSE:", data);
+            // console.log("USER:", user);
+            // console.log("PRODUCT:", item);
+
+            if (!res.ok) {
+                throw new Error(data.error?.message || "Already subscribed");
+            }
+
+            toast.success("We’ll notify you 🔔");
+
+            setNotified((prev) => ({
+                ...prev,
+                [item.id]: true,
+            }));
+
+        } catch (err) {
+            console.error(err);
+            toast.error(err.message || "Something went wrong");
+        }
+    };
 
     useEffect(() => {
         async function getProducts() {
@@ -112,6 +163,15 @@ export default function ProductCarousel() {
                                     />
                                     {/* )} */}
 
+                                    {/* 🔥 Bottom overlay container */}
+                                    <div className="absolute bottom-3 left-0 w-full flex justify-center px-3">
+
+                                        <button onClick={() => handleNotify(item)} disabled={notified[item.id]} className="flex items-center justify-center gap-2 w-full max-w-[85%] bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-white/20 transition shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer">
+                                            {notified[item.id] ? "✔ Notified" : "🔔 Notify me"}
+                                        </button>
+
+                                    </div>
+
                                     {/* Platform badge */}
                                     {item.platform && (
                                         <span className="absolute top-2 left-2 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded uppercase">
@@ -127,9 +187,13 @@ export default function ProductCarousel() {
                                     )}
                                 </div>
                                 <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
-                                    <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">{item.title}</h3>
+                                    <HoverCard title={item.title}>
+                                        <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">
+                                            {item.title}
+                                        </h3>
+                                    </HoverCard>
                                     <h3 className="text-lg font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
-                                    <p className="text-lg text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
+                                    <p className="text-lg text-[#ff0d00e3] font-bold dark:text-gray-300 px-3 mt-2 mb-2">
                                         Sold Out
                                     </p>
                                 </div>

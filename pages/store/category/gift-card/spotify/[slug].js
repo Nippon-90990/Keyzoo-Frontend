@@ -161,7 +161,7 @@ export default function ProductPage({ product }) {
 
                     {/* Tags + Ratings */}
                     <div className="flex flex-wrap items-center gap-2 text-sm mt-2.5">
-                        <span className="bg-[#ff7f6a] px-2.5 py-1 rounded font-medium text-white">{product.item_type}</span>
+                        <span className="bg-[#1DB954] px-2.5 py-1 rounded font-medium text-white">{product.item_type}</span>
                         <span className="bg-[#2a2a2a] px-2.5 py-1 rounded font-medium text-white">{product.item}</span>
                         <div className="flex items-center gap-2 text-yellow-400 ml-0 sm:ml-2">
                             <span className="w-[1px] h-[30px] bg-[#ffffff1a]"></span>
