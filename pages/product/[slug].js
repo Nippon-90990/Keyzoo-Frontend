@@ -240,6 +240,7 @@ export default function ProductPage({ product, regionsData }) {
 
   const imgUrl = getStrapiMedia(product.image?.url);
   const age = getStrapiMedia(product.age?.url);
+  const platform_icon_svg = getStrapiMedia(product.platform_icon_image?.url);
 
   // const discountPercent = Math.round(
   //   100 - (product.price / product.discountPrice) * 100
@@ -390,7 +391,7 @@ export default function ProductPage({ product, regionsData }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4 mt-4 lg:mt-6">
             {/* India Activation */}
             <div className="flex items-start gap-3">
-              <div className="bg-white dark:bg-[#1a1a1a] p-3 rounded-xl">
+              <div className="h-[56px] w-[56px] border border-[#e7e7e7] bg-white dark:bg-[#1a1a1a] rounded-xl flex items-center justify-center">
                 {/* <SlCheck className="text-xl text-[#1cc54c]" /> */}
                 <svg className="w-[32px] h-[32px] text-blue-500 fill-current">
                   <use xlinkHref="/sprit/icons.svg#green-tick"></use>
@@ -406,7 +407,7 @@ export default function ProductPage({ product, regionsData }) {
 
             {/* Region */}
             <div className="flex items-start gap-3">
-              <div className="bg-white dark:bg-[#1a1a1a] p-3 rounded-xl text-white">
+              <div className="h-[56px] w-[56px] border border-[#e7e7e7] bg-white dark:bg-[#1a1a1a] rounded-xl flex items-center justify-center">
                 {/* <FaGlobeAmericas className="text-xl text-[#359dff]" /> */}
                 <svg className="w-[32px] h-[32px] text-blue-500 fill-current">
                   <use xlinkHref="/sprit/icons.svg#blue-globe"></use>
@@ -422,7 +423,7 @@ export default function ProductPage({ product, regionsData }) {
 
             {/* Platform */}
             <div className="flex items-start gap-3">
-              <div className="bg-white dark:bg-[#1a1a1a] p-3 rounded-xl text-white">
+              <div className="h-[56px] w-[56px] border border-[#e7e7e7] bg-white dark:bg-[#1a1a1a] rounded-xl flex items-center justify-center">
                 {/* <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
                   <rect width="32" height="32" rx="8" fill="#FAA41A" />
                   <path d="M25.8815 18.6765H22.0481L21.4404 14.8549L19.1939 18.6497H18.7739C18.5188 18.2104 18.4179 17.5673 18.4179 17.1735C18.4179 16.5206 18.4648 15.8841 18.4648 15.0556C18.4648 13.9568 18.1418 13.367 17.28 13.1598V13.1273C19.1131 12.8724 19.9444 11.6595 19.9444 9.95193C19.9444 7.52591 18.3306 7 16.2156 7H10.525L8.12012 18.3882H11.1442L12.0193 14.2444H14.0294C15.1019 14.2444 15.5402 14.7691 15.5402 15.7732C15.5402 16.537 15.4606 17.1417 15.4606 17.7298C15.4606 17.9477 15.51 18.4535 15.6568 18.6497C15.6553 18.6497 17.8426 20.9562 17.8426 20.9562L15.9622 25L19.9844 22.6102L22.9816 24.9127L22.4221 21.0977L25.8815 18.6765ZM14.9332 12.1124H12.5296L13.1054 9.36687H15.3417C16.1379 9.36687 16.9661 9.57399 16.9661 10.5484C16.9661 11.7766 16.0228 12.1124 14.9332 12.1124Z" fill="black" />
@@ -436,12 +437,18 @@ export default function ProductPage({ product, regionsData }) {
                     <use href={platformIcons[product.platformIcons]} />
                   </svg>
                 ) : (
-                  <svg
-                    className="w-[32px] h-[32px] text-gray-400 fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <use href="/sprit/icons.svg#unknown" />
-                  </svg>
+                  // <svg
+                  //   className="w-[32px] h-[32px] text-gray-400 fill-current"
+                  //   xmlns="http://www.w3.org/2000/svg"
+                  // >
+                  //   <use href="/sprit/icons.svg#unknown" />
+                  // </svg>
+                  <Image
+                    src={platform_icon_svg}
+                    alt="Platform Icon"
+                    width={40}
+                    height={40}
+                  />
                 )}
 
 
@@ -456,7 +463,7 @@ export default function ProductPage({ product, regionsData }) {
 
             {/* Operating System */}
             <div className="flex items-start gap-3">
-              <div className="bg-white dark:bg-[#1a1a1a] p-3 rounded-xl text-white">
+              <div className="h-[56px] w-[56px] border border-[#e7e7e7] bg-white dark:bg-[#1a1a1a] rounded-xl flex items-center justify-center">
                 {/* <LuLaptopMinimalCheck className="text-xl text-[#359dff]" /> */}
                 <svg className="w-[32px] h-[32px] text-blue-500 fill-current">
                   <use xlinkHref="/sprit/icons.svg#screen-check"></use>
@@ -525,7 +532,7 @@ export default function ProductPage({ product, regionsData }) {
                             handleRegionChange(region);
                             setSearch("");
                           }}
-                          className={`w-full text-left px-4 py-3 text-sm transition
+                          className={`w-full text-left px-4 py-3 text-sm transition uppercase
                   ${selectedRegion === region
                               ? "bg-[#3a3a3a] text-white"
                               : "text-white/90 hover:bg-[#3a3a3a]"
@@ -686,7 +693,7 @@ export default function ProductPage({ product, regionsData }) {
           {/* Buy with Plus */}
           <div className="bg-gradient-to-r from-[#2f1c4d] to-[#1d0e3e] rounded-lg p-3 mt-2.5">
             <p className="text-xs lg:text-sm text-white/70">
-              Buy with <span className="text-purple-400 font-semibold">plus</span>
+              Buy with <span className="text-purple-400 font-semibold">Keyzoo</span>
             </p>
             <p className="text-lg lg:text-xl font-bold">{product.plusprice}</p>
           </div>

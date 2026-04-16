@@ -54,8 +54,9 @@ export default function Footer() {
 
           {/* Language Switcher */}
           <div className="flex items-center gap-2 bg-[#2a2a2a] px-4 py-2 rounded-md w-max">
-            <Image src="/icons/india.svg" alt="India Flag" width={20} height={14} />
-            <span>INR • English</span>
+            <Image src="/icons/globe_2.0.svg" alt="India Flag" width={20} height={14} />
+            {/* <span>INR • English</span> */}
+            <span><span className="font-bold uppercase">Global</span> • English</span>
             <ThemeToggle />
           </div>
         </div>

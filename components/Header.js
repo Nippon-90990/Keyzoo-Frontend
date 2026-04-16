@@ -333,10 +333,10 @@ export default function Header() {
         <Link href="/topup" className="whitespace-nowrap">
           Topups
         </Link>
-        <Link href="#" className="whitespace-nowrap">
+        <Link href="/pricing" className="whitespace-nowrap">
           Save with <span className="text-purple-400 font-bold">plus</span>
         </Link>
-        <Link href="#" className="whitespace-nowrap">
+        <Link href="/country-connections" className="whitespace-nowrap">
           Explore eSIMs
         </Link>
       </nav>

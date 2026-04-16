@@ -32,7 +32,7 @@ export default function MyOrders() {
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}api/orders?populate=*`,
+          `${process.env.NEXT_PUBLIC_STRAPI_URL}api/my-orders`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -125,9 +125,9 @@ export default function MyOrders() {
                 <div className="flex items-center justify-between sm:justify-end gap-3">
                   <span
                     className={`text-xs px-3 py-1 rounded-lg uppercase ${
-                      order.deliveryStatus === "SUCCESS"
+                      order.deliveryStatus === "completed" || order.deliveryStatus === "delivered"
                         ? "bg-[#01b40133] text-[#01b401]"
-                        : order.deliveryStatus === "CANCELLED"
+                        : order.deliveryStatus === "pending"
                         ? "bg-[#b4010133] text-[#ff5a5a]"
                         : "bg-[#80808033] text-gray-400"
                     }`}

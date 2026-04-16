@@ -12,6 +12,7 @@ import ProductGiftCardCarousel from '@/components/ProductGiftCardCarousel';
 import PromoBannerOne from '@/components/PromoBannerOne';
 import HomeBanner from '@/components/HomeBanner';
 import RecentlyViewed from '@/components/RecentlyViewed';
+import AdBannerSection from '@/components/AdBannerSection';
 // import TestingSlider from '@/components/TestingSlider';
 
 const HomeHero = () => {
@@ -22,7 +23,8 @@ const HomeHero = () => {
       <ProductCarousel />
       <PlatformSlider />
       <BeastSelling />
-      <DrifflePlusSection/>
+      {/* <DrifflePlusSection/> */}
+      <AdBannerSection />
       <ProductGiftCardCarousel />
       {/* <TestingSlider /> */}
       <div className='flex justify-center items-center'><DiscoverByPrice /></div>

@@ -55,9 +55,16 @@ export default function SignInPage() {
         login(data.user, data.jwt);
         setSuccess("Login successful!");
 
+        const isAdmin = data.user.role?.name === "Admin";
+
         setTimeout(() => {
-          router.push("/");
+          if (isAdmin) {
+            router.push("/admin/orders"); // admin panel
+          } else {
+            router.push("/"); // normal user
+          }
         }, 600);
+
       } else {
         setError(data.error?.message || "Login failed");
 
