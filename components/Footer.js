@@ -64,7 +64,7 @@ export default function Footer() {
         {/* Column 2: Company */}
         <div className="space-y-3 items-center md:items-start flex flex-col">
           <h4 className="text-white font-semibold text-xl mb-3">Company</h4>
-          <Link href={'/about-us'}><p className='cursor-pointer text-[gray] hover:text-white'>About</p></Link>
+          <Link href={'/about-us'}><p className='cursor-pointer text-[gray] hover:text-white'>About Us</p></Link>
           <Link href={'/contact-us'}><p className='cursor-pointer text-[gray] hover:text-white'>Contact Us</p></Link>
         </div>
 
