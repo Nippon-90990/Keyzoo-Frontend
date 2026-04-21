@@ -85,7 +85,7 @@ export default function Footer() {
         {/* Column 5: Community + Business */}
         <div className="space-y-3 items-center md:items-start flex flex-col">
           <h4 className="text-white font-semibold text-xl mb-3">Community</h4>
-          <p className='cursor-pointer text-[gray] hover:text-white'>Blog</p>
+          <Link href={'/blog'} className='cursor-pointer text-[gray] hover:text-white'>Blog</Link>
           <p className='cursor-pointer text-[gray] hover:text-white'>Become an Affiliate</p>
 
           <h4 className="text-white font-semibold text-xl mt-5 mb-3">Business</h4>
