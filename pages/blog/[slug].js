@@ -15,12 +15,23 @@ export async function getServerSideProps({ params }) {
 }
 
 export default function BlogPost({ post }) {
-    const { title, content, coverImage } = post;
-
-    const imageUrl =
-        coverImage?.formats?.large?.url || coverImage?.url;
+    const { title, content } = post;
 
     return (
-        <BlockRenderer blocks={post.content} />
+        <div className="min-h-screen">
+
+            <div className="max-w-7xl mx-auto px-4 py-10">
+
+                {/* Title */}
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                    {title}
+                </h1>
+
+                {/* Content */}
+                <BlockRenderer blocks={content} />
+
+            </div>
+
+        </div>
     );
 }

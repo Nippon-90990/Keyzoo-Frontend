@@ -2,16 +2,20 @@ export default function BlockRenderer({ blocks }) {
     if (!blocks) return null;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 text-gray-200 leading-relaxed">
+
             {blocks.map((block, index) => {
                 switch (block.__component) {
+
+                    // 🧠 HEADING
                     case "blog.heading-block":
                         return (
-                            <h2 key={index} className="text-2xl font-bold text-white">
+                            <h2 key={index} className="text-2xl font-bold text-white mt-8">
                                 {block.text}
                             </h2>
                         );
 
+                    // 📝 TEXT
                     case "blog.text-block":
                         return (
                             <div
@@ -21,17 +25,20 @@ export default function BlockRenderer({ blocks }) {
                             />
                         );
 
+                    // 🖼 IMAGE (FULL WIDTH LIKE YOUR SCREENSHOT)
                     case "blog.image-block": {
-                        const imageUrl = block.image?.url;
+                        const image =
+                            block.image?.formats?.large?.url || block.image?.url;
+
                         return (
-                            <div key={index}>
+                            <div key={index} className="my-6">
                                 <img
-                                    src={imageUrl}
-                                    className="rounded-xl w-full"
+                                    src={image}
+                                    className="w-full rounded-xl border border-gray-800"
                                     alt="blog"
                                 />
                                 {block.caption && (
-                                    <p className="text-gray-400 text-sm mt-2">
+                                    <p className="text-sm text-gray-400 mt-2">
                                         {block.caption}
                                     </p>
                                 )}
@@ -39,14 +46,20 @@ export default function BlockRenderer({ blocks }) {
                         );
                     }
 
+                    // 🔥 STEP BLOCK (MATCH YOUR STYLE)
                     case "blog.step-block": {
-                        const imageUrl = block.image?.url;
+                        const image =
+                            block.image?.formats?.large?.url || block.image?.url;
+
                         return (
                             <div key={index} className="space-y-4">
-                                <h3 className="text-xl font-semibold text-white">
+
+                                {/* Step title */}
+                                <h3 className="text-lg font-semibold text-white">
                                     {block.stepNumber}. {block.title}
                                 </h3>
 
+                                {/* Step description */}
                                 <div
                                     className="prose prose-invert max-w-none"
                                     dangerouslySetInnerHTML={{
@@ -54,10 +67,11 @@ export default function BlockRenderer({ blocks }) {
                                     }}
                                 />
 
-                                {imageUrl && (
+                                {/* Step image */}
+                                {image && (
                                     <img
-                                        src={imageUrl}
-                                        className="rounded-xl w-full"
+                                        src={image}
+                                        className="w-full rounded-xl border border-gray-800"
                                         alt={block.title}
                                     />
                                 )}
@@ -69,6 +83,7 @@ export default function BlockRenderer({ blocks }) {
                         return null;
                 }
             })}
+
         </div>
     );
 }
