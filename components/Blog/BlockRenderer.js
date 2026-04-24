@@ -8,10 +8,10 @@ export default function BlockRenderer({ blocks }) {
                 switch (block.__component) {
 
                     // 🧠 HEADING
-                    case "blog.heading-block":
+                    case "blog.heading":
                         return (
                             <h2 key={index} className="text-2xl font-bold text-white mt-8">
-                                {block.text}
+                                {block.heading_title}
                             </h2>
                         );
 
@@ -26,7 +26,7 @@ export default function BlockRenderer({ blocks }) {
                         );
 
                     // 🖼 IMAGE (FULL WIDTH LIKE YOUR SCREENSHOT)
-                    case "blog.image-block": {
+                    case "blog.image": {
                         const image =
                             block.image?.formats?.large?.url || block.image?.url;
 
@@ -47,7 +47,7 @@ export default function BlockRenderer({ blocks }) {
                     }
 
                     // 🔥 STEP BLOCK (MATCH YOUR STYLE)
-                    case "blog.step-block": {
+                    case "blog.step": {
                         const image =
                             block.image?.formats?.large?.url || block.image?.url;
 

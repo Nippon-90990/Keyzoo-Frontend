@@ -20,19 +20,21 @@ export default function BlogCard({ post }) {
                     {post.category?.name || "Guide"}
                 </p>
 
-                <h3 className="text-white font-semibold text-lg mt-1 group-hover:text-indigo-400 transition">
-                    {post.title}
+                <h3 className="text-white font-semibold text-lg mt-2 line-clamp-2 leading-snug">
+                    {post.heading_title}
                 </h3>
 
-                <p className="text-gray-400 text-sm mt-2 line-clamp-2">
+                {/* <p className="text-gray-400 text-sm mt-2 line-clamp-2">
                     {post.excerpt}
-                </p>
+                </p> */}
 
-                <div className="flex items-center gap-2 mt-4">
-                    <div className="w-6 h-6 bg-gray-500 rounded-full" />
-                    <p className="text-gray-400 text-sm">
-                        {new Date(post.publishedAt).toLocaleDateString()}
-                    </p>
+                <div className="flex items-center gap-2 mt-2">
+                    <img src="https://res.cloudinary.com/dblttl9bh/image/upload/v1777040886/download_72b365daca.png" className="w-12 h-12 rounded-full" />
+                    <div className="flex flex-col"><span className="text-gray-300">By {post.author?.data?.attributes?.name || "Admin"}</span>
+                        <p className="text-gray-400 text-sm">
+                            {new Date(post.publishedAt).toLocaleDateString()}
+                        </p>
+                    </div>
                 </div>
 
             </div>

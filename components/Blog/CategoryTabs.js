@@ -9,7 +9,7 @@ export default function CategoryTabs({ categories, onChange }) {
     };
 
     return (
-        <div className="flex gap-6 border-b border-gray-800 mb-6 mt-6 overflow-x-auto">
+        <div className="flex gap-6 border-b border-gray-800 mb-6 mt-6 overflow-x-auto justify-between content-between">
             <button
                 onClick={() => handle("all")}
                 className={`pb-2 ${active === "all"
