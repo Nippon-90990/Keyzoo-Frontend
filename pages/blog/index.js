@@ -63,7 +63,7 @@ export default function BlogPage({ posts }) {
             <CategoryTabs categories={categories} onChange={handleFilter} />
 
             {/* Grid */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
                 {filtered.map((post) => (
                     <BlogCard key={post.id} post={post} />
                 ))}

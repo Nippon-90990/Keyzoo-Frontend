@@ -11,12 +11,23 @@ import { loadStripe } from "@stripe/stripe-js";
 
 export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrease, selectedPayment }) {
 
+    // Load Cashfree script for payments
     useEffect(() => {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.async = true;
-        document.body.appendChild(script);
+        if (!window.Cashfree) {
+            const script = document.createElement("script");
+            script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+            script.async = true;
+            document.body.appendChild(script);
+        }
     }, []);
+
+    // Load Razorpay script for payments
+    // useEffect(() => {
+    //     const script = document.createElement("script");
+    //     script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    //     script.async = true;
+    //     document.body.appendChild(script);
+    // }, []);
 
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
     const { symbol } = useCurrency();
@@ -149,8 +160,8 @@ export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrea
                 else alert("Stripe checkout failed");
             }
 
-            if (selectedPayment.includes("UPI") || selectedPayment === "Google Pay") {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/razorpay/create`, {
+            if (selectedPayment.includes("UPI") || selectedPayment.includes("Google Pay")) {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/cashfree/create`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -160,50 +171,32 @@ export default function OrderSummary({ cartItems, onRemove, onIncrease, onDecrea
                         total,
                     }),
                 });
+
                 const data = await res.json();
 
-                const options = {
-                    key: data.key,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: "Your Brand",
-                    order_id: data.orderId,
-                    handler: async (response) => {
-                        // verify payment
-                        const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/checkout/razorpay/verify`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(response),
-                        });
-                        const verifyData = await verifyRes.json();
+                if (!data.payment_session_id) {
+                    console.error("Cashfree error:", data);
+                    alert("Payment initialization failed");
+                    setLoading(false);
+                    return;
+                }
+                console.log("Cashfree response:", data);
 
-                        if (verifyData.verified) {
-                            // call order success endpoint
-                            await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}api/orders/razorpay/success`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    orderId: data.orderId,
-                                    paymentId: response.razorpay_payment_id,
-                                    userId: user.id,
-                                    email: user.email,
-                                    cartItems,
-                                    amount: total,
-                                }),
-                            });
+                if (!window.Cashfree) {
+                    alert("Payment system not loaded. Try again.");
+                    setLoading(false);
+                    return;
+                }
 
-                            window.location.href = "/success";
-                        } else {
-                            alert("Verification failed");
-                        }
-                    },
-                    prefill: { email: user.email },
-                };
+                const cashfree = new window.Cashfree({
+                    mode: "sandbox", // change to production later
+                });
 
-                const rzp = new window.Razorpay(options);
-                rzp.open();
+                cashfree.checkout({
+                    paymentSessionId: data.payment_session_id,
+                    returnUrl: `${window.location.origin}/success`,
+                });
             }
-
 
             else if (selectedPayment === "Crypto") {
                 // 🪙 Binance Pay (or other crypto gateway)

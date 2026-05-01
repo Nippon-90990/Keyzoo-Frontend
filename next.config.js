@@ -17,7 +17,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'wise-peace-adfa09b55e.media.strapiapp.com',
+                hostname: 'wise-horse-c531a7dfe7.strapiapp.com',
             },
             {
                 protocol: 'https',

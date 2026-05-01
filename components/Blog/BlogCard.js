@@ -11,7 +11,7 @@ export default function BlogCard({ post }) {
                 <div className="overflow-hidden rounded-xl aspect-[16/9]">
                     <img
                         src={image}
-                        className="w-full h-full object-cover group-hover:scale-105 transition"
+                        className="w-full h-full object-center group-hover:scale-105 transition"
                         alt={post.title}
                     />
                 </div>
@@ -20,7 +20,7 @@ export default function BlogCard({ post }) {
                     {post.category?.name || "Guide"}
                 </p>
 
-                <h3 className="text-white font-semibold text-lg mt-2 line-clamp-2 leading-snug">
+                <h3 className="text-white font-semibold text-lg mt-2 line-clamp-1 leading-snug">
                     {post.heading_title}
                 </h3>
 

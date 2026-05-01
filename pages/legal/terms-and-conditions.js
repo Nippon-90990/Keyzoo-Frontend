@@ -2,21 +2,21 @@ import React from 'react'
 import LegalPageLayout from "@/components/LegalPageLayout"
 import { fetchFromStrapi } from "@/lib/strapi"
 
-export async function getServerSideProps() {
-    const res = await fetchFromStrapi(
-        "api/terms-and-conditions?populate=*"
-    )
+// export async function getServerSideProps() {
+//     const res = await fetchFromStrapi(
+//         "api/terms-and-conditions?populate=*"
+//     )
 
-    const page = res?.data?.[0] || null
+//     const page = res?.data?.[0] || null
 
-    if (!page) return { notFound: true }
+//     if (!page) return { notFound: true }
 
-    return {
-        props: {
-            page,
-        },
-    }
-}
+//     return {
+//         props: {
+//             page,
+//         },
+//     }
+// }
 
 const termsAndConditions = ({ page }) => {
     return (
