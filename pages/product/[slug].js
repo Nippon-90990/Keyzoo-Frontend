@@ -3,11 +3,16 @@ import { React, useRef, useMemo } from "react";
 import { useState, useEffect } from "react";
 import { IoStarHalfSharp, IoStarSharp } from "react-icons/io5";
 import { FaNoteSticky } from "react-icons/fa6";
-import { FaGlobeAmericas, FaMemory } from 'react-icons/fa';
+import { FaGlobeAmericas, FaMemory } from "react-icons/fa";
 import { SlCheck } from "react-icons/sl";
 import { LuLaptopMinimalCheck } from "react-icons/lu";
 import { RiShoppingBag3Fill } from "react-icons/ri";
-import { MdOutlineAddShoppingCart, MdSupportAgent, MdVerified, MdSdStorage } from "react-icons/md";
+import {
+  MdOutlineAddShoppingCart,
+  MdSupportAgent,
+  MdVerified,
+  MdSdStorage,
+} from "react-icons/md";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { GiProcessor } from "react-icons/gi";
 import { BsFillLaptopFill, BsPciCardSound } from "react-icons/bs";
@@ -18,10 +23,10 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "@/store/cartSlice";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import 'swiper/css';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import "swiper/css";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules"; // ✅ import Navigation
 import "swiper/css/navigation"; // ✅ import navigation styles
 import { platformIcons } from "@/lib/platformIcons";
@@ -63,11 +68,11 @@ export async function getServerSideProps({ params }) {
   const { slug } = params;
 
   const productRes = await fetchFromStrapi(
-    `api/products?filters[slug][$eq]=${slug}&populate=*`
+    `api/products?filters[slug][$eq]=${slug}&populate=*`,
   );
 
   const regionsRes = await fetchFromStrapi(
-    `api/regions` // 👈 your region collection
+    `api/regions`, // 👈 your region collection
   );
 
   return {
@@ -78,9 +83,7 @@ export async function getServerSideProps({ params }) {
   };
 }
 
-
 export default function ProductPage({ product, regionsData }) {
-
   // Destructure minimum and recommended requirements safely and languages also...
   const minimumRequirements = product?.minimumRequirement || {};
   const recommendedRequirements = product?.recommendedRequirement || {};
@@ -94,16 +97,13 @@ export default function ProductPage({ product, regionsData }) {
   const allEditions = [product, ...relatedProducts];
 
   const uniqueEditions = Array.from(
-    new Map(allEditions.map((p) => [p.slug, p])).values()
+    new Map(allEditions.map((p) => [p.slug, p])).values(),
   );
 
-  const allVariants = useMemo(() => [
-    product,
-    ...relatedProducts,
-    ...relatedRegionProducts,
-  ], [product, relatedProducts, relatedRegionProducts]);
-
-
+  const allVariants = useMemo(
+    () => [product, ...relatedProducts, ...relatedRegionProducts],
+    [product, relatedProducts, relatedRegionProducts],
+  );
 
   const [regionOpen, setRegionOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -118,15 +118,13 @@ export default function ProductPage({ product, regionsData }) {
   //   : product.title;
 
   const filteredRegions = regions
-    .filter((region) =>
-      region.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((region) => region.toLowerCase().includes(search.toLowerCase()))
     .filter((region) =>
       allVariants.some(
         (p) =>
           p.region?.toLowerCase() === region.toLowerCase() &&
-          p.var_title === product.var_title
-      )
+          p.var_title === product.var_title,
+      ),
     );
 
   const dispatch = useDispatch();
@@ -143,32 +141,38 @@ export default function ProductPage({ product, regionsData }) {
   const [loading, setLoading] = useState(false);
 
   const handleAddToCart = () => {
-    dispatch(addToCart({
-      id: product.id,
-      title: product.title,
-      // game_tag: product.item,
-      item_type_game: product.item_type,
-      price: product.discountPrice,
-      region: product.region,
-      image: imgUrl,
-      // add more if you want
-    }));
+    dispatch(
+      addToCart({
+        id: product.id,
+        type: product.type,
+        title: product.title,
+        // game_tag: product.item,
+        item_type_game: product.item_type,
+        price: product.discountPrice,
+        region: product.region,
+        image: imgUrl,
+        // add more if you want
+      }),
+    );
     toast.success("Added to cart!");
   };
 
   const handleBuyNow = () => {
     setLoading(true);
-    dispatch(addToCart({
-      id: product.id,
-      title: product.title,
-      // game_tag: product.item,
-      item_type_game: product.item_type,
-      price: product.discountPrice,
-      region: product.region,
-      image: imgUrl,
-      // add more if you want
-    }));
-    router.push('/checkout');
+    dispatch(
+      addToCart({
+        id: product.id,
+        type: product.type,
+        title: product.title,
+        // game_tag: product.item,
+        item_type_game: product.item_type,
+        price: product.discountPrice,
+        region: product.region,
+        image: imgUrl,
+        // add more if you want
+      }),
+    );
+    router.push("/checkout");
   };
 
   const { symbol } = useCurrency();
@@ -203,10 +207,7 @@ export default function ProductPage({ product, regionsData }) {
   // handle click outside for region dropdown
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setRegionOpen(false);
         setSearch("");
       }
@@ -225,7 +226,6 @@ export default function ProductPage({ product, regionsData }) {
   //   ? `${process.env.NEXT_PUBLIC_STRAPI_IMAGE_URL}${attributes.image.data.attributes.url}`
   //   : null;
 
-
   //=======================================================================================//
   // this is comment out because i use cloudinery. if not clouninery then uncomment it.
 
@@ -237,7 +237,6 @@ export default function ProductPage({ product, regionsData }) {
 
   //=======================================================================================//
 
-
   const imgUrl = getStrapiMedia(product.image?.url);
   const age = getStrapiMedia(product.age?.url);
   const platform_icon_svg = getStrapiMedia(product.platform_icon_image?.url);
@@ -246,9 +245,11 @@ export default function ProductPage({ product, regionsData }) {
   //   100 - (product.price / product.discountPrice) * 100
   // );
 
-  {/* this is fine but only work for products base proce only not veriation */ }
+  {
+    /* this is fine but only work for products base proce only not veriation */
+  }
   const discountPercent = Math.round(
-    ((product.price - product.discountPrice) / product.price) * 100
+    ((product.price - product.discountPrice) / product.price) * 100,
   );
 
   // If a variation is selected, use its price; otherwise fallback to product price
@@ -259,7 +260,6 @@ export default function ProductPage({ product, regionsData }) {
   //   basePrice && discountPrice
   //     ? Math.round(((basePrice - discountPrice) / basePrice) * 100)
   //     : 0; // fallback to 0 if no discount
-
 
   const [expanded, setExpanded] = useState(false);
 
@@ -289,9 +289,7 @@ export default function ProductPage({ product, regionsData }) {
   useEffect(() => {
     if (!allVariants.length) return;
 
-    const regionSet = new Set(
-      allVariants.map((p) => p.region).filter(Boolean)
-    );
+    const regionSet = new Set(allVariants.map((p) => p.region).filter(Boolean));
 
     setRegions(Array.from(regionSet));
     setSelectedRegion(product.region || null);
@@ -305,7 +303,7 @@ export default function ProductPage({ product, regionsData }) {
     const matched = allVariants.find(
       (p) =>
         p.region?.toLowerCase() === region.toLowerCase() &&
-        p.var_title === currentEdition
+        p.var_title === currentEdition,
     );
 
     if (matched) {
@@ -332,8 +330,6 @@ export default function ProductPage({ product, regionsData }) {
   return (
     <div className="min-h-screen p-4 lg:p-6">
       <div className="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-1 lg:grid-cols-[260px_1fr_380px] gap-4 lg:gap-6 xl:gap-8">
-
-
         {/* Left: Cover Image - Fixed width for laptop and up */}
         <div className="w-full md:w-[260px] flex justify-center mx-auto">
           <div className="relative w-full md:w-[260px]">
@@ -350,22 +346,29 @@ export default function ProductPage({ product, regionsData }) {
 
             {/* this is for sold or not sold for this */}
             {/* <span className="absolute bottom-15 right-2 bg-black/80 text-white text-[15px] px-2 py-0.5 rounded-lg uppercase"> */}
-            {product.stock_stetus && (<span className="absolute top-2 right-2 bg-black/80 text-white text-[15px] px-2 py-0.5 rounded-lg capitalize">
-              {product.stockk_stetus}
-            </span>)}
+            {product.stock_stetus && (
+              <span className="absolute top-2 right-2 bg-black/80 text-white text-[15px] px-2 py-0.5 rounded-lg capitalize">
+                {product.stockk_stetus}
+              </span>
+            )}
           </div>
         </div>
 
         {/* Middle: Game Info - Flex column */}
-        <div className="flex flex-col gap-2 mx-auto xl:mx-0">   {/* mx-auto is the problem we need to fix it leater */}
+        <div className="flex flex-col gap-2 mx-auto xl:mx-0">
+          {" "}
+          {/* mx-auto is the problem we need to fix it leater */}
           <h1 className="text-lg lg:text-xl font-semibold dark:text-white text-justify tracking-tighter">
             {product.title}
           </h1>
-
           {/* Tags + Ratings */}
           <div className="flex flex-wrap items-center gap-2 text-sm mt-2.5">
-            <span className="bg-[#5539cc] px-2.5 py-1 rounded font-medium text-white">{product.item}</span>
-            <span className="bg-[#2a2a2a] px-2.5 py-1 rounded font-medium text-white">{product.item_type}</span>
+            <span className="bg-[#5539cc] px-2.5 py-1 rounded font-medium text-white">
+              {product.item}
+            </span>
+            <span className="bg-[#2a2a2a] px-2.5 py-1 rounded font-medium text-white">
+              {product.item_type}
+            </span>
             <div className="flex items-center gap-2 text-yellow-400 ml-0 sm:ml-2">
               <span className="w-[1px] h-[30px] bg-[#ffffff1a]"></span>
               <span className="flex items-center">
@@ -383,10 +386,8 @@ export default function ProductPage({ product, regionsData }) {
               {/* ⭐⭐⭐⭐⭐ <span className="text-white">69 Ratings</span> */}
             </div>
           </div>
-
           {/* this is a devider for visual balance */}
           <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
-
           {/* Feature Grid - 2 columns on laptop */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4 mt-4 lg:mt-6">
             {/* India Activation */}
@@ -401,7 +402,9 @@ export default function ProductPage({ product, regionsData }) {
                 <p className="text-xs lg:text-sm">
                   Can be activated in <strong>{product.region}</strong>
                 </p>
-                <a href="#" className="text-[#359dff] text-xs">Check Restrictions</a>
+                <a href="#" className="text-[#359dff] text-xs">
+                  Check Restrictions
+                </a>
               </div>
             </div>
 
@@ -417,7 +420,9 @@ export default function ProductPage({ product, regionsData }) {
                 <p className="text-xs lg:text-sm">
                   Region: <strong>{product.region}</strong>
                 </p>
-                <a href="#" className="text-[#359dff] text-xs">Check Region</a>
+                <a href="#" className="text-[#359dff] text-xs">
+                  Check Region
+                </a>
               </div>
             </div>
 
@@ -450,14 +455,14 @@ export default function ProductPage({ product, regionsData }) {
                     height={40}
                   />
                 )}
-
-
               </div>
               <div>
                 <p className="text-xs lg:text-sm">
                   Platform: <strong>{product.platform_image}</strong>
                 </p>
-                <a href="#" className="text-[#359dff] text-xs">Activation Guide</a>
+                <a href="#" className="text-[#359dff] text-xs">
+                  Activation Guide
+                </a>
               </div>
             </div>
 
@@ -473,20 +478,17 @@ export default function ProductPage({ product, regionsData }) {
                 <p className="text-xs lg:text-sm">
                   Works on: <strong>{product.workPlatform}</strong>
                 </p>
-                <a href="#" className="text-[#359dff] text-xs">System Requirements</a>
+                <a href="#" className="text-[#359dff] text-xs">
+                  System Requirements
+                </a>
               </div>
             </div>
           </div>
-
           <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
-
           {/* Region Selector */} {/* i will show it for dekstop only */}
           <div className="flex items-center gap-4 mt-4">
-            <span className="text-sm text-gray-400">
-              Region
-            </span>
+            <span className="text-sm text-gray-400">Region</span>
             <div ref={dropdownRef} className="relative w-[340px]">
-
               {/* Trigger */}
               <button
                 onClick={() => setRegionOpen(!regionOpen)}
@@ -510,7 +512,6 @@ export default function ProductPage({ product, regionsData }) {
               {/* Dropdown */}
               {regionOpen && (
                 <div className="absolute z-50 mt-2 w-full bg-[#2a2a2a] rounded-xl shadow-2xl border border-white/10">
-
                   {/* Search */}
                   <div className="p-3 border-b border-white/10">
                     <input
@@ -533,10 +534,11 @@ export default function ProductPage({ product, regionsData }) {
                             setSearch("");
                           }}
                           className={`w-full text-left px-4 py-3 text-sm transition uppercase
-                  ${selectedRegion === region
-                              ? "bg-[#3a3a3a] text-white"
-                              : "text-white/90 hover:bg-[#3a3a3a]"
-                            }
+                  ${
+                    selectedRegion === region
+                      ? "bg-[#3a3a3a] text-white"
+                      : "text-white/90 hover:bg-[#3a3a3a]"
+                  }
                 `}
                         >
                           {region}
@@ -551,17 +553,13 @@ export default function ProductPage({ product, regionsData }) {
                       </div>
                     )}
                   </div>
-
                 </div>
               )}
             </div>
           </div>
-
           <div className="border-t border-neutral-800 mt-3 lg:mt-4"></div>
-
           {/* <div className="mt-4 lg:mt-6">
             {/* <h3 className="text-xs lg:text-sm text-white/60 mb-2">Edition:</h3> */}
-
           {/* <div className="flex flex-col sm:flex-row gap-3">
               {/* Option 1 */}
           {/* <label className="w-full sm:w-[200px] cursor-pointer">
@@ -580,7 +578,6 @@ export default function ProductPage({ product, regionsData }) {
                   <div className="mt-1 text-xs text-white/50">from ₹1,024.45</div>
                 </div>
               </label> */}
-
           {/* Option 2 */}
           {/* <label className="w-full sm:w-[200px] cursor-pointer">
                 <input
@@ -599,82 +596,99 @@ export default function ProductPage({ product, regionsData }) {
               </label> */}
           {/* </div> */}
           {/* </div> */}
+          {product.var_title && (
+            <div className="mt-4 lg:mt-4.5">
+              <h3 className="text-xs lg:text-sm text-white/60 mb-4.5">
+                Edition:
+              </h3>
 
-          {product.var_title && (<div className="mt-4 lg:mt-4.5">
-            <h3 className="text-xs lg:text-sm text-white/60 mb-4.5">Edition:</h3>
+              <div className="flex flex-col sm:flex-row gap-3">
+                {uniqueEditions?.map((edition) => {
+                  const isAvailable = edition.Available; // or whatever field indicates availability
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              {uniqueEditions?.map((edition) => {
+                  return (
+                    <label
+                      key={edition.slug}
+                      className={`w-full sm:w-[200px] cursor-pointer select-none ${isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
+                    >
+                      <input
+                        type="radio"
+                        name="edition"
+                        value={edition.slug}
+                        className="peer sr-only"
+                        checked={selectedSlug === edition.slug}
+                        disabled={!isAvailable}
+                        // onChange={() => {
+                        //   setSelectedSlug(product.slug);
+                        //   router.push(`/product/${product.slug}`);
+                        // }}
+                        onChange={() => {
+                          if (!isAvailable) return;
+                          if (edition.slug === selectedSlug) return;
 
-                const isAvailable = edition.Available; // or whatever field indicates availability
+                          const matched = allVariants.find(
+                            (p) =>
+                              p.var_title === edition.var_title &&
+                              p.region?.toLowerCase() ===
+                                selectedRegion?.toLowerCase(),
+                          );
 
-                return (
-                  <label key={edition.slug} className={`w-full sm:w-[200px] cursor-pointer select-none ${isAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}>
-                    <input
-                      type="radio"
-                      name="edition"
-                      value={edition.slug}
-                      className="peer sr-only"
-                      checked={selectedSlug === edition.slug}
-                      disabled={!isAvailable}
-                      // onChange={() => {
-                      //   setSelectedSlug(product.slug);
-                      //   router.push(`/product/${product.slug}`);
-                      // }}
-                      onChange={() => {
+                          if (!matched) {
+                            toast("This combination is not available");
+                            return;
+                          }
 
-                        if (!isAvailable) return;
-                        if (edition.slug === selectedSlug) return;
+                          router.push(`/product/${matched.slug}`);
+                        }}
+                      />
 
-                        const matched = allVariants.find(
-                          (p) =>
-                            p.var_title === edition.var_title &&
-                            p.region?.toLowerCase() === selectedRegion?.toLowerCase()
-                        );
+                      <div
+                        className={`p-4 rounded-xl border bg-[#1a1a1a] transition-all flex flex-col justify-between min-h-[90px]
+                      ${
+                        !isAvailable
+                          ? "border-gray-700 bg-[#111] text-white/40"
+                          : selectedSlug === edition.slug
+                            ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
+                            : "border-[#2e2e2e] hover:border-purple-400"
+                      }`}
+                      >
+                        {" "}
+                        {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-white flex items-center gap-2">
+                            {edition.var_title}
 
-                        if (!matched) {
-                          toast("This combination is not available");
-                          return;
-                        }
+                            {selectedSlug === edition.slug && isAvailable && (
+                              <span className="text-green-400 text-xs">
+                                (Current)
+                              </span>
+                            )}
 
-                        router.push(`/product/${matched.slug}`);
-                      }}
-                    />
-
-                    <div className={`p-4 rounded-xl border bg-[#1a1a1a] transition-all flex flex-col justify-between min-h-[90px]
-                      ${!isAvailable
-                        ? "border-gray-700 bg-[#111] text-white/40"
-                        : selectedSlug === edition.slug
-                          ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
-                          : "border-[#2e2e2e] hover:border-purple-400"
-                      }`}>  {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-white flex items-center gap-2">
-                          {edition.var_title}
-
-                          {selectedSlug === edition.slug && isAvailable && (
-                            <span className="text-green-400 text-xs">(Current)</span>
+                            {!isAvailable && (
+                              <span className="text-red-400 text-xs">
+                                (Out of stock)
+                              </span>
+                            )}
+                          </span>{" "}
+                          {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
+                        </div>
+                        <div className="mt-1 text-xs text-white/50 h-[16px]">
+                          {isAvailable ? (
+                            <>
+                              from {symbol}
+                              {edition.discountPrice}
+                            </>
+                          ) : (
+                            "Unavailable"
                           )}
-
-                          {!isAvailable && (
-                            <span className="text-red-400 text-xs">(Out of stock)</span>
-                          )}
-                        </span> {/* <div className="w-4 h-4 rounded-full border-2 border-white/60 peer-checked:border-purple-500"></div> */}
+                        </div>
                       </div>
-
-                      <div className="mt-1 text-xs text-white/50 h-[16px]">
-                        {isAvailable ? (
-                          <>from {symbol}{edition.discountPrice}</>
-                        ) : (
-                          "Unavailable"
-                        )}
-                      </div>
-                    </div>
-                  </label>);
-              })}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
-          </div>)}
+          )}
         </div>
 
         {/* Right: Pricing Box - Shows on xl screens or as last column on lg */}
@@ -682,18 +696,28 @@ export default function ProductPage({ product, regionsData }) {
         <div className="w-full max-w-md mx-auto bg-gradient-to-br from-[#111] to-[#1a1a1a] p-4 rounded-2xl shadow-lg border border-neutral-800 mt-6 self-start sticky top-6">
           {/* Featured Offer */}
           <div>
-            <p className="text-xs text-white/70 uppercase font-medium mb-1">Featured Offer</p>
-            <p className="text-xl lg:text-2xl font-bold"> {symbol} {Number(product.discountPrice).toFixed(2)}</p>
+            <p className="text-xs text-white/70 uppercase font-medium mb-1">
+              Featured Offer
+            </p>
+            <p className="text-xl lg:text-2xl font-bold">
+              {" "}
+              {symbol} {Number(product.discountPrice).toFixed(2)}
+            </p>
             <div className="flex items-center gap-2 text-xs lg:text-sm text-white/60">
-              <span className="line-through">{symbol} {product.price}</span>
-              <span className="text-green-400 font-semibold">~ {discountPercent}% off</span>
+              <span className="line-through">
+                {symbol} {product.price}
+              </span>
+              <span className="text-green-400 font-semibold">
+                ~ {discountPercent}% off
+              </span>
             </div>
           </div>
 
           {/* Buy with Plus */}
           <div className="bg-gradient-to-r from-[#2f1c4d] to-[#1d0e3e] rounded-lg p-3 mt-2.5">
             <p className="text-xs lg:text-sm text-white/70">
-              Buy with <span className="text-purple-400 font-semibold">Keyzoo</span>
+              Buy with{" "}
+              <span className="text-purple-400 font-semibold">Keyzoo</span>
             </p>
             <p className="text-lg lg:text-xl font-bold">{product.plusprice}</p>
           </div>
@@ -704,28 +728,51 @@ export default function ProductPage({ product, regionsData }) {
           {/* Buttons */}
           <div className="flex gap-3 mt-4">
             {/* Cart icon-only button */}
-            {product.Available ? (<button onClick={handleAddToCart} className="cursor-pointer bg-neutral-800 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
-              <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
-            </button>) :
-              (<button disabled className="select-none cursor-not-allowed bg-gray-400 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center">
+            {product.Available ? (
+              <button
+                onClick={handleAddToCart}
+                className="cursor-pointer bg-neutral-800 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center"
+              >
                 <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
-              </button>)}
+              </button>
+            ) : (
+              <button
+                disabled
+                className="select-none cursor-not-allowed bg-gray-400 p-2 lg:p-3 rounded-lg text-white flex items-center justify-center"
+              >
+                <MdOutlineAddShoppingCart className="text-xl lg:text-2xl" />
+              </button>
+            )}
 
             {/* Buy Now full-width button */}
-            {product.Available ? (<button onClick={handleBuyNow} disabled={loading} className="cursor-pointer flex items-center justify-center gap-2 bg-[#814DE5] hover:bg-[#6C34D8] transition-colors text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
-              <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
-              {loading ? 'Processing...' : 'Buy now'}
-            </button>) :
-              (<button disabled className="select-none cursor-not-allowed flex items-center justify-center gap-2 bg-gray-400 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base">
+            {product.Available ? (
+              <button
+                onClick={handleBuyNow}
+                disabled={loading}
+                className="cursor-pointer flex items-center justify-center gap-2 bg-[#814DE5] hover:bg-[#6C34D8] transition-colors text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base"
+              >
                 <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
-                {loading ? 'Processing...' : 'Buy now'}
-              </button>)}
+                {loading ? "Processing..." : "Buy now"}
+              </button>
+            ) : (
+              <button
+                disabled
+                className="select-none cursor-not-allowed flex items-center justify-center gap-2 bg-gray-400 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-lg w-full font-semibold text-sm lg:text-base"
+              >
+                <RiShoppingBag3Fill className="text-xl lg:text-2xl" />
+                {loading ? "Processing..." : "Buy now"}
+              </button>
+            )}
           </div>
 
           {/* Explore Plus */}
           <div className="bg-[#1d1d1d] rounded-xl p-3 flex items-center gap-2 mt-5 mb-5">
-            <div className="border border-purple-600 px-2 py-0.5 rounded text-purple-400 text-xs lg:text-sm font-medium">plus</div>
-            <p className="text-xs lg:text-sm text-white font-medium">Explore Plus Benefits</p>
+            <div className="border border-purple-600 px-2 py-0.5 rounded text-purple-400 text-xs lg:text-sm font-medium">
+              plus
+            </div>
+            <p className="text-xs lg:text-sm text-white font-medium">
+              Explore Plus Benefits
+            </p>
           </div>
 
           {/* Feature Boxes */}
@@ -738,9 +785,10 @@ export default function ProductPage({ product, regionsData }) {
                   <svg className="w-6 h-6 text-blue-500 fill-current">
                     <use xlinkHref="/sprit/icons.svg#thunder"></use>
                   </svg>
-
                 </div>
-                <span className="text-xs lg:text-sm text-white">Instant Delivery</span>
+                <span className="text-xs lg:text-sm text-white">
+                  Instant Delivery
+                </span>
               </div>
             </HoverCard>
 
@@ -753,7 +801,9 @@ export default function ProductPage({ product, regionsData }) {
                     <use xlinkHref="/sprit/icons.svg#support-agent"></use>
                   </svg>
                 </div>
-                <span className="text-xs lg:text-sm text-white">24/7 Support</span>
+                <span className="text-xs lg:text-sm text-white">
+                  24/7 Support
+                </span>
               </div>
             </HoverCard>
 
@@ -766,10 +816,11 @@ export default function ProductPage({ product, regionsData }) {
                     <use xlinkHref="/sprit/icons.svg#verified-filled"></use>
                   </svg>
                 </div>
-                <span className="text-xs lg:text-sm text-white">Verified Sellers</span>
+                <span className="text-xs lg:text-sm text-white">
+                  Verified Sellers
+                </span>
               </div>
             </HoverCard>
-
           </div>
         </div>
       </div>
@@ -803,7 +854,6 @@ export default function ProductPage({ product, regionsData }) {
           ))}
         </Swiper>
 
-
         {/* Custom Swiper arrows styling */}
         <style>{`
           .swiper-button-prev,
@@ -823,105 +873,224 @@ export default function ProductPage({ product, regionsData }) {
         {/* </div> */}
       </div>
 
-
       {/* Important Notice */}
-      {product.notice && (<><div className="bg-[#1a1a1a] text-orange-500 p-3 lg:p-4 rounded-xl mt-4 lg:mt-6 text-xs lg:text-sm border border-[#2a2a2a] max-w-[1500px] mx-auto">
-        <div className="flex flex-col lg:flex-row gap-1 lg:gap-2 xl:gap-5">
-          <div className="font-semibold text-orange-500 text-sm lg:text-base xl:text-lg">
-            {product.notice}
-          </div>
-          {/* <div className="font-semibold text-orange-500 text-sm lg:text-base xl:text-lg">
+      {product.notice && (
+        <>
+          <div className="bg-[#1a1a1a] text-orange-500 p-3 lg:p-4 rounded-xl mt-4 lg:mt-6 text-xs lg:text-sm border border-[#2a2a2a] max-w-[1500px] mx-auto">
+            <div className="flex flex-col lg:flex-row gap-1 lg:gap-2 xl:gap-5">
+              <div className="font-semibold text-orange-500 text-sm lg:text-base xl:text-lg">
+                {product.notice}
+              </div>
+              {/* <div className="font-semibold text-orange-500 text-sm lg:text-base xl:text-lg">
             Works only on PC. Activate the code on Rockstar Games Launcher.
           </div> */}
-        </div>
-      </div>
-      </>)}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Product Description */}
       <div className="relative bg-[#1a1a1a] p-3 lg:p-4 rounded-xl mt-4 lg:mt-6 text-xs lg:text-sm border border-[#2a2a2a] max-w-[1500px] mx-auto">
-        <div className={`
+        <div
+          className={`
       transition-all duration-500 ease-in-out
       ${expanded ? "max-h-[5000px]" : "max-h-[260px] overflow-hidden"}
-    `}>
-          <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 dark:text-white">Product description</h2>
+    `}
+        >
+          <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 dark:text-white">
+            Product description
+          </h2>
           <div className="font-semibold mb-5 text-lg">{product.title}</div>
 
           <div className="flex gap-3.5">
-            {Tags.gametag_1 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_1}</div>)}
-            {Tags.gametag_2 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_2}</div>)}
-            {Tags.gametag_3 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_3}</div>)}
-            {Tags.gametag_4 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_4}</div>)}
-            {Tags.gametag_5 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_5}</div>)}
-            {Tags.gametag_6 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_6}</div>)}
-            {Tags.gametag_7 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_7}</div>)}
-            {Tags.gametag_8 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_8}</div>)}
-            {Tags.gametag_9 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_9}</div>)}
-            {Tags.gametag_10 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_10}</div>)}
-            {Tags.gametag_11 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_11}</div>)}
-            {Tags.gametag_12 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_12}</div>)}
-            {Tags.gametag_13 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_13}</div>)}
-            {Tags.gametag_14 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_14}</div>)}
-            {Tags.gametag_15 && (<div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">{Tags.gametag_15}</div>)}
+            {Tags.gametag_1 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_1}
+              </div>
+            )}
+            {Tags.gametag_2 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_2}
+              </div>
+            )}
+            {Tags.gametag_3 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_3}
+              </div>
+            )}
+            {Tags.gametag_4 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_4}
+              </div>
+            )}
+            {Tags.gametag_5 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_5}
+              </div>
+            )}
+            {Tags.gametag_6 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_6}
+              </div>
+            )}
+            {Tags.gametag_7 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_7}
+              </div>
+            )}
+            {Tags.gametag_8 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_8}
+              </div>
+            )}
+            {Tags.gametag_9 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_9}
+              </div>
+            )}
+            {Tags.gametag_10 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_10}
+              </div>
+            )}
+            {Tags.gametag_11 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_11}
+              </div>
+            )}
+            {Tags.gametag_12 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_12}
+              </div>
+            )}
+            {Tags.gametag_13 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_13}
+              </div>
+            )}
+            {Tags.gametag_14 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_14}
+              </div>
+            )}
+            {Tags.gametag_15 && (
+              <div className="rounded-2xl bg-[#2a2a2a] hover:bg-[#333] transition-all h-[35px] w-[100px] flex items-center justify-center">
+                {Tags.gametag_15}
+              </div>
+            )}
           </div>
 
           {/* <div className="mt-5"><p className="text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">{product.description}</p></div> */}
           <div className="mt-5">
             <ReactMarkdown
               components={{
-                h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
-                strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
-                ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
-                li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
-                p: ({ node, ...props }) => <p className="mb-2 leading-relaxed text-[#bfbfbf]" {...props} />,   //importent
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-md font-bold mt-6 mb-2" {...props} />
+                ), //importent but if you add h2 on heading description
+                strong: ({ node, ...props }) => (
+                  <strong className="text-md font-bold text-white" {...props} />
+                ), //importent but if you add h2 on heading description
+                ul: ({ node, ...props }) => (
+                  <ul className="list-disc pl-0" {...props} />
+                ), //importent
+                li: ({ node, ...props }) => <li className="mb-1" {...props} />, //importent
+                p: ({ node, ...props }) => (
+                  <p
+                    className="mb-2 leading-relaxed text-[#bfbfbf]"
+                    {...props}
+                  />
+                ), //importent
               }}
             >
               {product?.description}
             </ReactMarkdown>
           </div>
 
-          {product.descriptionkey && (<><div className="mt-5 text-md font-bold">Key Features</div>
+          {product.descriptionkey && (
+            <>
+              <div className="mt-5 text-md font-bold">Key Features</div>
 
-            <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
-              <div className="ml-8 justify-center">
-                <ReactMarkdown
-                  components={{
-                    h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
-                    strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
-                    ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
-                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
-                    p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,   //importent
-                  }}
-                >
-                  {product?.descriptionkey}
-                </ReactMarkdown>
+              <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
+                <div className="ml-8 justify-center">
+                  <ReactMarkdown
+                    components={{
+                      h2: ({ node, ...props }) => (
+                        <h2
+                          className="text-md font-bold mt-6 mb-2"
+                          {...props}
+                        />
+                      ), //importent but if you add h2 on heading description
+                      strong: ({ node, ...props }) => (
+                        <strong
+                          className="text-md font-bold text-white"
+                          {...props}
+                        />
+                      ), //importent but if you add h2 on heading description
+                      ul: ({ node, ...props }) => (
+                        <ul className="list-disc pl-0" {...props} />
+                      ), //importent
+                      li: ({ node, ...props }) => (
+                        <li className="mb-1" {...props} />
+                      ), //importent
+                      p: ({ node, ...props }) => (
+                        <p className="mb-2 leading-relaxed" {...props} />
+                      ), //importent
+                    }}
+                  >
+                    {product?.descriptionkey}
+                  </ReactMarkdown>
+                </div>
               </div>
-            </div></>)}
+            </>
+          )}
 
-          {product?.editiondescription && (<div>
-            <div className="mt-5 text-md font-bold">{product?.editiontitle}</div>
+          {product?.editiondescription && (
+            <div>
+              <div className="mt-5 text-md font-bold">
+                {product?.editiontitle}
+              </div>
 
-            <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
-              <div className="ml-8 justify-center">
-                <ReactMarkdown
-                  components={{
-                    h2: ({ node, ...props }) => <h2 className="text-md font-bold mt-6 mb-2" {...props} />,    //importent but if you add h2 on heading description
-                    strong: ({ node, ...props }) => <strong className="text-md font-bold text-white" {...props} />,    //importent but if you add h2 on heading description
-                    ul: ({ node, ...props }) => <ul className="list-disc pl-0" {...props} />,   //importent
-                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,   //importent
-                    p: ({ node, ...props }) => <p className="mb-2 leading-relaxed" {...props} />,   //importent
-                  }}
-                >
-                  {product?.editiondescription}
-                </ReactMarkdown>
+              <div className="mt-2 text-[0.875rem] text-[#bfbfbf] leading-[20px] text-justify">
+                <div className="ml-8 justify-center">
+                  <ReactMarkdown
+                    components={{
+                      h2: ({ node, ...props }) => (
+                        <h2
+                          className="text-md font-bold mt-6 mb-2"
+                          {...props}
+                        />
+                      ), //importent but if you add h2 on heading description
+                      strong: ({ node, ...props }) => (
+                        <strong
+                          className="text-md font-bold text-white"
+                          {...props}
+                        />
+                      ), //importent but if you add h2 on heading description
+                      ul: ({ node, ...props }) => (
+                        <ul className="list-disc pl-0" {...props} />
+                      ), //importent
+                      li: ({ node, ...props }) => (
+                        <li className="mb-1" {...props} />
+                      ), //importent
+                      p: ({ node, ...props }) => (
+                        <p className="mb-2 leading-relaxed" {...props} />
+                      ), //importent
+                    }}
+                  >
+                    {product?.editiondescription}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
-          </div>)}
+          )}
         </div>
 
         {/* Fade gradient (only when collapsed) */}
         {!expanded && (
           // <div className="pointer-events-none absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-[#1a1a1a] to-transparent" />
-          <div className={`pointer-events-none absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/90 via-[#1a1a1a]/70 to-transparent transition-all duration-500 ease-in-out ${expanded ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`} />
+          <div
+            className={`pointer-events-none absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/90 via-[#1a1a1a]/70 to-transparent transition-all duration-500 ease-in-out ${expanded ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}
+          />
         )}
 
         {/* Toggle button */}
@@ -933,7 +1102,6 @@ export default function ProductPage({ product, regionsData }) {
             {expanded ? "Read less" : "Read more"}
           </button>
         </div>
-
       </div>
 
       {/* System Requirements */}
@@ -941,17 +1109,23 @@ export default function ProductPage({ product, regionsData }) {
         {/* System Tag */}
         <div className="flex items-center gap-2 mb-5.5">
           <span className="text-gray-400 text-[14px]">System :</span>
-          <span className="bg-[#2f2f2f] text-white px-2 lg:px-3 py-1.5 rounded-[20px] text-[14px] font-medium cursor-pointer">{product.workPlatform}</span>
+          <span className="bg-[#2f2f2f] text-white px-2 lg:px-3 py-1.5 rounded-[20px] text-[14px] font-medium cursor-pointer">
+            {product.workPlatform}
+          </span>
         </div>
 
         {/* Title */}
-        <h2 className="font-semibold text-base lg:text-lg">Minimum System Requirements</h2>
+        <h2 className="font-semibold text-base lg:text-lg">
+          Minimum System Requirements
+        </h2>
 
         {/* Grid of specs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           {/* OS */}
           <div className="flex items-start gap-2 lg:gap-3 max-w-[400px]">
-            <span className="text-blue-500 text-base lg:text-lg"><BsFillLaptopFill size={20} className="lg:w-6 lg:h-6" /></span>
+            <span className="text-blue-500 text-base lg:text-lg">
+              <BsFillLaptopFill size={20} className="lg:w-6 lg:h-6" />
+            </span>
             <div>
               <p className="text-gray-400 font-medium">OS:</p>
               <p className="text-white text-justify mt-2">
@@ -962,7 +1136,9 @@ export default function ProductPage({ product, regionsData }) {
 
           {/* Processor */}
           <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-            <span className="text-blue-500 text-base lg:text-lg"><GiProcessor size={20} className="lg:w-6 lg:h-6" /></span>
+            <span className="text-blue-500 text-base lg:text-lg">
+              <GiProcessor size={20} className="lg:w-6 lg:h-6" />
+            </span>
             <div>
               <p className="text-gray-400 font-medium">Processor:</p>
               <p className="text-white text-justify mt-2">
@@ -973,57 +1149,85 @@ export default function ProductPage({ product, regionsData }) {
 
           {/* Memory */}
           <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-            <span className="text-blue-500 text-base lg:text-lg"><FaMemory size={20} className="lg:w-6 lg:h-6" /></span>
+            <span className="text-blue-500 text-base lg:text-lg">
+              <FaMemory size={20} className="lg:w-6 lg:h-6" />
+            </span>
             <div>
               <p className="text-gray-400 font-medium">Memory:</p>
-              <p className="text-white text-justify mt-2">{minimumRequirements.memory}</p>
+              <p className="text-white text-justify mt-2">
+                {minimumRequirements.memory}
+              </p>
             </div>
           </div>
 
           {/* Graphics */}
           <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-            <span className="text-blue-500 text-base lg:text-lg"><PiGraphicsCard size={20} className="lg:w-6 lg:h-6" /></span>
+            <span className="text-blue-500 text-base lg:text-lg">
+              <PiGraphicsCard size={20} className="lg:w-6 lg:h-6" />
+            </span>
             <div>
               <p className="text-gray-400 font-medium">Graphics:</p>
-              <p className="text-white text-justify mt-2">{minimumRequirements.graphics}</p>
+              <p className="text-white text-justify mt-2">
+                {minimumRequirements.graphics}
+              </p>
             </div>
           </div>
 
           {/* Storage */}
           <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-            <span className="text-blue-500 text-base lg:text-lg"><MdSdStorage size={20} className="lg:w-6 lg:h-6" /></span>
+            <span className="text-blue-500 text-base lg:text-lg">
+              <MdSdStorage size={20} className="lg:w-6 lg:h-6" />
+            </span>
             <div>
               <p className="text-gray-400 font-medium">Storage:</p>
-              <p className="text-white text-justify mt-2">{minimumRequirements.storage}</p>
+              <p className="text-white text-justify mt-2">
+                {minimumRequirements.storage}
+              </p>
             </div>
           </div>
 
           {/* Sound Card */}
-          {minimumRequirements.sound && (<div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-            <span className="text-blue-500 text-base lg:text-lg"><BsPciCardSound size={20} className="lg:w-6 lg:h-6" /></span>
-            <div>
-              <p className="text-gray-400 font-medium">Sound Card:</p>
-              <p className="text-white text-justify mt-2">{minimumRequirements.sound}</p>
+          {minimumRequirements.sound && (
+            <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
+              <span className="text-blue-500 text-base lg:text-lg">
+                <BsPciCardSound size={20} className="lg:w-6 lg:h-6" />
+              </span>
+              <div>
+                <p className="text-gray-400 font-medium">Sound Card:</p>
+                <p className="text-white text-justify mt-2">
+                  {minimumRequirements.sound}
+                </p>
+              </div>
             </div>
-          </div>)}
+          )}
 
           {/* Additional Notes */}
-          {minimumRequirements.additional_notes && (<div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-            <span className="text-blue-500 text-base lg:text-lg"><FaNoteSticky size={20} className="lg:w-6 lg:h-6" /></span>
-            <div>
-              <p className="text-gray-400 font-medium">Additional Notes:</p>
-              <p className="text-white text-justify mt-2">{minimumRequirements.additional_notes}</p>
+          {minimumRequirements.additional_notes && (
+            <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
+              <span className="text-blue-500 text-base lg:text-lg">
+                <FaNoteSticky size={20} className="lg:w-6 lg:h-6" />
+              </span>
+              <div>
+                <p className="text-gray-400 font-medium">Additional Notes:</p>
+                <p className="text-white text-justify mt-2">
+                  {minimumRequirements.additional_notes}
+                </p>
+              </div>
             </div>
-          </div>)}
+          )}
         </div>
 
         <div>
-          <h2 className="font-semibold text-base lg:text-lg mt-8 lg:mt-10">Recomended System Requirements</h2>
+          <h2 className="font-semibold text-base lg:text-lg mt-8 lg:mt-10">
+            Recomended System Requirements
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-4 lg:mt-5 mb-4 lg:mb-5">
             {/* OS */}
             <div className="flex items-start gap-2 lg:gap-3 max-w-[400px]">
-              <span className="text-blue-500 text-base lg:text-lg"><BsFillLaptopFill size={20} className="lg:w-6 lg:h-6" /></span>
+              <span className="text-blue-500 text-base lg:text-lg">
+                <BsFillLaptopFill size={20} className="lg:w-6 lg:h-6" />
+              </span>
               <div>
                 <p className="text-gray-400 font-medium">OS:</p>
                 <p className="text-white text-justify mt-2">
@@ -1034,7 +1238,9 @@ export default function ProductPage({ product, regionsData }) {
 
             {/* Processor */}
             <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-              <span className="text-blue-500 text-base lg:text-lg"><GiProcessor size={20} className="lg:w-6 lg:h-6" /></span>
+              <span className="text-blue-500 text-base lg:text-lg">
+                <GiProcessor size={20} className="lg:w-6 lg:h-6" />
+              </span>
               <div>
                 <p className="text-gray-400 font-medium">Processor:</p>
                 <p className="text-white text-justify mt-2">
@@ -1045,50 +1251,73 @@ export default function ProductPage({ product, regionsData }) {
 
             {/* Memory */}
             <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-              <span className="text-blue-500 text-base lg:text-lg"><FaMemory size={20} className="lg:w-6 lg:h-6" /></span>
+              <span className="text-blue-500 text-base lg:text-lg">
+                <FaMemory size={20} className="lg:w-6 lg:h-6" />
+              </span>
               <div>
                 <p className="text-gray-400 font-medium">Memory:</p>
-                <p className="text-white text-justify mt-2">{recommendedRequirements.memory}</p>
+                <p className="text-white text-justify mt-2">
+                  {recommendedRequirements.memory}
+                </p>
               </div>
             </div>
 
             {/* Graphics */}
             <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-              <span className="text-blue-500 text-base lg:text-lg"><PiGraphicsCard size={20} className="lg:w-6 lg:h-6" /></span>
+              <span className="text-blue-500 text-base lg:text-lg">
+                <PiGraphicsCard size={20} className="lg:w-6 lg:h-6" />
+              </span>
               <div>
                 <p className="text-gray-400 font-medium">Graphics:</p>
-                <p className="text-white text-justify mt-2">{recommendedRequirements.graphics}</p>
+                <p className="text-white text-justify mt-2">
+                  {recommendedRequirements.graphics}
+                </p>
               </div>
             </div>
 
             {/* Storage */}
             <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-              <span className="text-blue-500 text-base lg:text-lg"><MdSdStorage size={20} className="lg:w-6 lg:h-6" /></span>
+              <span className="text-blue-500 text-base lg:text-lg">
+                <MdSdStorage size={20} className="lg:w-6 lg:h-6" />
+              </span>
               <div>
                 <p className="text-gray-400 font-medium">Storage:</p>
-                <p className="text-white text-justify mt-2">{recommendedRequirements.storage}</p>
+                <p className="text-white text-justify mt-2">
+                  {recommendedRequirements.storage}
+                </p>
               </div>
             </div>
 
             {/* Sound Card */}
 
-            {recommendedRequirements.sound && (<div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-              <span className="text-blue-500 text-base lg:text-lg"><BsPciCardSound size={20} className="lg:w-6 lg:h-6" /></span>
-              <div>
-                <p className="text-gray-400 font-medium">Sound Card:</p>
-                <p className="text-white text-justify mt-2">{recommendedRequirements.sound}</p>
+            {recommendedRequirements.sound && (
+              <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
+                <span className="text-blue-500 text-base lg:text-lg">
+                  <BsPciCardSound size={20} className="lg:w-6 lg:h-6" />
+                </span>
+                <div>
+                  <p className="text-gray-400 font-medium">Sound Card:</p>
+                  <p className="text-white text-justify mt-2">
+                    {recommendedRequirements.sound}
+                  </p>
+                </div>
               </div>
-            </div>)}
+            )}
 
             {/* Additional Notes */}
-            {recommendedRequirements.additional_notes && (<div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
-              <span className="text-blue-500 text-base lg:text-lg"><FaNoteSticky size={20} className="lg:w-6 lg:h-6" /></span>
-              <div>
-                <p className="text-gray-400 font-medium">Additional Notes:</p>
-                <p className="text-white text-justify mt-2">{recommendedRequirements.additional_notes}</p>
+            {recommendedRequirements.additional_notes && (
+              <div className="flex items-start gap-2 lg:gap-3 max-w-[400px] tracking-tight">
+                <span className="text-blue-500 text-base lg:text-lg">
+                  <FaNoteSticky size={20} className="lg:w-6 lg:h-6" />
+                </span>
+                <div>
+                  <p className="text-gray-400 font-medium">Additional Notes:</p>
+                  <p className="text-white text-justify mt-2">
+                    {recommendedRequirements.additional_notes}
+                  </p>
+                </div>
               </div>
-            </div>)}
-
+            )}
           </div>
         </div>
       </div>
@@ -1114,7 +1343,13 @@ export default function ProductPage({ product, regionsData }) {
           </div>
           <div>
             <p className="text-gray-400 mb-1">Age rating</p>
-            <Image width={6} height={6} src={age} alt="18+" className="w-8 h-8" />
+            <Image
+              width={6}
+              height={6}
+              src={age}
+              alt="18+"
+              className="w-8 h-8"
+            />
           </div>
         </div>
 
@@ -1125,16 +1360,19 @@ export default function ProductPage({ product, regionsData }) {
 
           {/* Languages */}
           {/* Languages - Only render if language data exists */}
-          <h2 className="text-sm lg:text-base font-semibold">Languages Support</h2>
+          <h2 className="text-sm lg:text-base font-semibold">
+            Languages Support
+          </h2>
           {/* <div> */}
-
-
 
           {Interface.interface && (
             <>
               <div>
                 <p className="text-white">
-                  <div className="text-gray-400 mb-1 text-[16px]">Interface : </div>{Interface.interface}
+                  <div className="text-gray-400 mb-1 text-[16px]">
+                    Interface :{" "}
+                  </div>
+                  {Interface.interface}
                 </p>
               </div>
 
@@ -1145,7 +1383,10 @@ export default function ProductPage({ product, regionsData }) {
             <>
               <div>
                 <p className="text-white">
-                  <div className="text-gray-400 mb-1 text-[16px]">Full Audio : </div>{Audio.audio}
+                  <div className="text-gray-400 mb-1 text-[16px]">
+                    Full Audio :{" "}
+                  </div>
+                  {Audio.audio}
                 </p>
               </div>
 
@@ -1156,7 +1397,10 @@ export default function ProductPage({ product, regionsData }) {
             <>
               <div>
                 <p className="text-white">
-                  <div className="text-gray-400 mb-1 text-[16px]">Subtitles : </div>{Subtitles.subtitles}
+                  <div className="text-gray-400 mb-1 text-[16px]">
+                    Subtitles :{" "}
+                  </div>
+                  {Subtitles.subtitles}
                 </p>
               </div>
             </>
