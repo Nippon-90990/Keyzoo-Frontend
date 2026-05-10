@@ -203,7 +203,7 @@ export default function AdBannerSection() {
                                 <div className="flex justify-center">
                                     <button
                                         onClick={() => router.push(`/product/${ad.product?.slug}`)}
-                                        className="px-6 py-2 rounded-lg bg-[#814DE5] hover:bg-[#6C34D8] transition text-white font-medium cursor-pointer"
+                                        className="px-6 py-3 rounded-lg bg-[#6D28D9] hover:bg-[#5530a0] transition text-white font-medium cursor-pointer"
                                     >
                                         Take It Now!
                                     </button>

@@ -110,7 +110,9 @@ export default function ProfilePage() {
                 <button
                   onClick={handleUpdateUsername}
                   disabled={updating || username === user?.username}
-                  className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition"
+                  // className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition"
+                  // className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+                  className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/5"
                 >
                   Update
                 </button>
@@ -138,7 +140,10 @@ export default function ProfilePage() {
                     </span>
                   )}
                 </div>
-                <button className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition">
+                <button
+                  // className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition"
+                  // className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+                  className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/5">
                   Update
                 </button>
               </div>
@@ -153,7 +158,11 @@ export default function ProfilePage() {
                   className="flex-1 px-4 py-3 rounded-md bg-[#1e1e1e] text-white border border-neutral-700 focus:outline-none"
                   readOnly
                 />
-                <button className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition">
+                <button
+                  // className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition"
+                  // className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+                  className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/5"
+                >
                   Update
                 </button>
               </div>
@@ -169,7 +178,10 @@ export default function ProfilePage() {
                   readOnly
                   className="flex-1 px-4 py-3 rounded-md bg-[#1e1e1e] text-white border border-neutral-700 focus:outline-none"
                 />
-                <button className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition">
+                <button
+                  // className="px-4 py-2 rounded-full bg-[#313843] text-white hover:bg-[#3a4450] transition"
+                  // className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+                  className="rounded-lg border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/5">
                   Update
                 </button>
               </div>

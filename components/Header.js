@@ -218,7 +218,7 @@ export default function Header() {
         {/* Left: Logo */}
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo-white.png" alt="Logo" width={120} height={100} />
+            <Image src="https://res.cloudinary.com/dblttl9bh/image/upload/v1778325665/Chat_GPT_Image_May_9_2026_04_48_26_PM_1_113ae62610.png" alt="Logo" width={120} height={100} />
           </Link>
         </div>
 

@@ -230,7 +230,7 @@ export default function NewsletterSection() {
                         type='submit'
                         disabled={loading}
                         style={{ cursor: 'pointer' }}
-                        className="bg-[#A855F7] hover:bg-[#C084FC] p-3 sm:p-4 rounded-md font-semibold w-full sm:w-auto text-white transition-all duration-300"
+                        className="bg-[#6D28D9] hover:bg-[#5530a0] p-3 sm:p-4 rounded-md font-semibold w-full sm:w-auto text-white transition-all duration-300"
                     >
                         {loading ? "Subscribing..." : "Subscribe"}
                     </button>

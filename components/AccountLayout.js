@@ -53,6 +53,7 @@ import {
     FaShoppingBag,
 } from "react-icons/fa";
 import { IoGameControllerSharp } from "react-icons/io5";
+import Image from "next/image";
 
 export default function AccountLayout({ children }) {
     const router = useRouter();
@@ -116,9 +117,10 @@ export default function AccountLayout({ children }) {
                     <div className={`flex items-center gap-3`}>
                         <div className={`flex-shrink-0 ${collapsed ? "mx-auto" : ""}`}>
                             {/* small logo / initial when collapsed */}
-                            <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold">
+                            {/* <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold">
                                 K
-                            </div>
+                            </div> */}
+                            <Image src="https://res.cloudinary.com/dblttl9bh/image/upload/v1778412609/keyzoo_symbol_modified_3f7649acdd.png" height={50} width={50} alt="Logo"  />
                         </div>
                         {/* label hidden when collapsed */}
                         {!collapsed && <span className="font-semibold">Account</span>}

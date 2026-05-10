@@ -29,7 +29,7 @@ export default function ContactSection() {
             <ContactCard
               Icon={BusinessIcon}
               title="Business Development"
-              email="business@driffle.com"
+              email={process.env.NEXT_PUBLIC_BUSINESS_EMAIL || "N/A"}
             >
               For all questions or information regarding our business, kindly
               reach out to us at the following contact information:
@@ -38,7 +38,7 @@ export default function ContactSection() {
             <ContactCard
               Icon={LegalIcon}
               title="Legal Department"
-              email="legal@driffle.com"
+              email={process.env.NEXT_PUBLIC_LEGAL_EMAIL || "N/A"}
             >
               For clarification or assistance with any legal matters, our team
               of experts is available to assist you. Please contact them at:
@@ -47,7 +47,7 @@ export default function ContactSection() {
             <ContactCard
               Icon={TalentIcon}
               title="Talent Team"
-              email="careers@driffle.com"
+              email={process.env.NEXT_PUBLIC_TALENT_EMAIL || "N/A"}
             >
               Are you seeking a new employment opportunity? Our Talent team is
               available to assist you. Please contact them at:
@@ -62,7 +62,7 @@ export default function ContactSection() {
             <p className="text-gray-400 mb-6 text-sm sm:text-base">
               The best way to resolve it quickly is to create a ticket.
             </p>
-            <button className="px-6 py-2 text-sm sm:text-base rounded-full border border-gray-700 bg-[#4444444d] text-white cursor-pointer hover:bg-transparent hover:border-white transition">
+            <button onClick={()=> window.location.href = `mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`} className="px-6 py-2 text-sm sm:text-base rounded-full border border-gray-700 bg-[#4444444d] text-white cursor-pointer hover:bg-transparent hover:border-white transition">
               Mail us at
             </button>
           </div>

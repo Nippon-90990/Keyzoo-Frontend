@@ -8,6 +8,8 @@ import Turnstile from "react-turnstile";  // Import Turnstile component
 import { signIn } from "next-auth/react";  // Import signIn from next-auth
 
 export default function SignUpPage() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,7 +44,7 @@ export default function SignUpPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: email.split("@")[0],
+          username: `${firstName} ${lastName}`,
           email,
           password,
           turnstileToken,
@@ -56,7 +58,8 @@ export default function SignUpPage() {
         setSuccess("Account created successfully!");
         setTimeout(() => router.push("/sign-in"), 1000);
       } else {
-        setError(data?.error?.message || "Registration failed");
+        // setError(data?.error?.message || "Registration failed");
+        setError(data?.error || "Registration failed");
 
         // ⭐ AUTO-RESET TURNSTILE
         turnstileRef.current?.reset();
@@ -149,6 +152,33 @@ export default function SignUpPage() {
 
           {/* Form */}
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+              <div>
+                <label className="text-sm text-neutral-400">First Name</label>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  className="w-full mt-1 px-4 py-3 bg-neutral-800 rounded-md text-white outline-none focus:ring-2 focus:ring-purple-500 transition"
+                  placeholder="First name"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-neutral-400">Last Name</label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  className="w-full mt-1 px-4 py-3 bg-neutral-800 rounded-md text-white outline-none focus:ring-2 focus:ring-purple-500 transition"
+                  placeholder="Last name"
+                />
+              </div>
+
+            </div>
             <div>
               <label className="text-sm text-neutral-400">Email</label>
               <input
