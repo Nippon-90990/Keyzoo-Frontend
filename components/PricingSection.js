@@ -198,7 +198,7 @@ export default function PricingSection() {
 
             <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
                 {/* Header */}
-                <span className="inline-block text-sm font-medium text-purple-600 bg-purple-100 px-3 py-1 rounded-full">
+                <span className="inline-block text-sm font-medium text-white bg-[#6d3cff] px-3 py-1 rounded">
                     Pricing plans
                 </span>
 
@@ -215,7 +215,7 @@ export default function PricingSection() {
                 <div className="flex items-center justify-center gap-3 mt-8">
                     <button
                         onClick={() => setAnnual(!annual)}
-                        className={`w-14 h-7 flex items-center rounded-full p-1 transition-all duration-300 ${annual ? "bg-purple-600" : "bg-gray-300"
+                        className={`w-14 h-7 flex items-center rounded-full p-1 transition-all duration-300 ${annual ? "bg-[#6d3cff]" : "bg-gray-300"
                             }`}
                     >
                         <div
@@ -240,15 +240,17 @@ export default function PricingSection() {
                         >
                             {/* Badge */}
                             {plan.featured && (
-                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full shadow">
+                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#6c3dff] text-white text-xs px-3 py-1 rounded shadow">
                                     Most popular
                                 </span>
                             )}
 
                             <div>
-                                <h3 className="text-purple-600 font-semibold text-center">
-                                    {plan.name}
-                                </h3>
+                                <div className="flex items-center justify-center ">
+                                    <h3 className="text-white rounded font-semibold text-center px-3 py-1 bg-[#6d3cff]">
+                                        {plan.name}
+                                    </h3>
+                                </div>
 
                                 <p className="text-5xl font-semibold text-center mt-4 text-gray-900">
                                     {plan.price}
@@ -270,9 +272,9 @@ export default function PricingSection() {
 
                             {/* 🔥 Premium Button */}
                             <button className="mt-8 w-full py-3 rounded-lg font-medium text-white 
-                bg-gradient-to-r from-purple-600 to-indigo-500 
+                bg-gradient-to-r from-[#6d3cff] to-indigo-500 
                 shadow-md hover:shadow-lg 
-                hover:from-purple-700 hover:to-indigo-600
+                hover:from-[#6d3cff] hover:to-indigo-600
                 transition-all duration-300">
                                 Get started
                             </button>

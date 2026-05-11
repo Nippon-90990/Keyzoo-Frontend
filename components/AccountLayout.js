@@ -90,7 +90,7 @@ export default function AccountLayout({ children }) {
             desc: "View your collection of games.",
         },
         {
-            href: "/user/favorites",
+            href: "/user/favourites",
             icon: <FaHeart className="text-blue-400 text-xl" />,
             label: "Favorites",
             desc: "View your favourite games.",

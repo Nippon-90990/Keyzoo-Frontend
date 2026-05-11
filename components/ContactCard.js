@@ -84,6 +84,7 @@
 
 // components/ContactCard.js
 import React from "react";
+import Link from "next/link";
 
 export default function ContactCard({ Icon, title, children, email }) {
   return (
@@ -118,12 +119,12 @@ export default function ContactCard({ Icon, title, children, email }) {
           </p>
 
           {email && (
-            <a
+            <Link
               href={`mailto:${email}`}
-              className="text-blue-400 font-medium text-sm sm:text-md hover:underline break-all"
+              className="text-blue-400 font-medium text-sm sm:text-md break-all"
             >
               {email}
-            </a>
+            </Link>
           )}
         </div>
       </div>

@@ -334,7 +334,7 @@ export default function Header() {
           Topups
         </Link>
         <Link href="/pricing" className="whitespace-nowrap">
-          Save with <span className="text-purple-400 font-bold">plus</span>
+          Save with <span className="text-[#6d3cff] font-bold">plus</span>
         </Link>
         <Link href="/country-connections" className="whitespace-nowrap">
           Explore eSIMs

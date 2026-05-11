@@ -6,9 +6,12 @@ import Link from 'next/link';
 import useCurrency from '@/hook/useCurrency';
 import HoverCard from '@/components/HoverCard';
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { useRouter } from "next/router";
 
 export default function index() {
+
   const { symbol } = useCurrency();
+  const router = useRouter();
 
   // useEffect(() => {
   //   async function getProducts() {
@@ -250,24 +253,6 @@ export default function index() {
     return pages;
   };
 
-  if (!items || items.length === 0) {
-    return (
-      <section className="my-0 flex items-center justify-center flex-col min-h-screen">
-        <Image
-          src="/3d/no-data.png"
-          alt="No Data"
-          width={512}
-          height={512}
-          className="mb-4">
-        </Image>
-        {/* <h2 className="text-xl font-bold mb-4 dark:text-white">
-          Best Selling Games
-        </h2>
-        <p className="text-gray-500">No products found in Best Selling.</p> */}
-      </section>
-    );
-  }
-
   const getCount = (mapKey, value) => {
 
     return items.filter((x) => {
@@ -293,6 +278,157 @@ export default function index() {
     }).length;
 
   };
+
+  const getItemHref = (item) => {
+
+    // 🎮 PRODUCTS
+    if (item.type === "product") {
+      return `/product/${item.slug}`;
+    }
+
+    // 🎁 GIFT CARDS
+    if (item.type === "gift-card") {
+      return `/store/category/gift-card/${item.platform}/${item.slug}`;
+    }
+
+    // 🕹️ PLAYSTATION
+    if (item.type === "store/category/product/psn") {
+      return `/store/category/product/psn/${item.slug}`;
+    }
+
+    // FALLBACK
+    return "#";
+  };
+
+  useEffect(() => {
+
+    const query = {};
+
+    // 🔍 SEARCH
+    if (search) {
+      query.search = search;
+    }
+
+    // 🎮 PLATFORM
+    if (selectedPlatforms.length) {
+      query.platform = selectedPlatforms.join(",");
+    }
+
+    // 🌍 REGION
+    if (selectedRegions.length) {
+      query.region = selectedRegions.join(",");
+    }
+
+    // 📦 PRODUCT TYPE
+    if (selectedProductTypes.length) {
+      query.productType = selectedProductTypes.join(",");
+    }
+
+    // 🖥️ WORKS ON
+    if (selectedWorksOn.length) {
+      query.worksOn = selectedWorksOn.join(",");
+    }
+
+    // ✅ AVAILABLE
+    if (onlyAvailable) {
+      query.available = "true";
+    }
+
+    // 💰 PRICE
+    if (minPrice > 0) {
+      query.minPrice = minPrice;
+    }
+
+    if (maxPrice < 999999) {
+      query.maxPrice = maxPrice;
+    }
+
+    router.push(
+      {
+        pathname: router.pathname,
+        query,
+      },
+      undefined,
+      { shallow: true }
+    );
+
+  }, [
+    search,
+    selectedPlatforms,
+    selectedRegions,
+    selectedProductTypes,
+    selectedWorksOn,
+    onlyAvailable,
+    minPrice,
+    maxPrice,
+  ]);
+
+  useEffect(() => {
+
+    if (!router.isReady) return;
+
+    const {
+      search,
+      platform,
+      region,
+      productType,
+      worksOn,
+      available,
+      minPrice,
+      maxPrice,
+    } = router.query;
+
+    if (search) {
+      setSearch(search);
+    }
+
+    if (platform) {
+      setSelectedPlatforms(String(platform).split(","));
+    }
+
+    if (region) {
+      setSelectedRegions(String(region).split(","));
+    }
+
+    if (productType) {
+      setSelectedProductTypes(String(productType).split(","));
+    }
+
+    if (worksOn) {
+      setSelectedWorksOn(String(worksOn).split(","));
+    }
+
+    if (available === "true") {
+      setOnlyAvailable(true);
+    }
+
+    if (minPrice) {
+      setMinPrice(Number(minPrice));
+    }
+
+    if (maxPrice) {
+      setMaxPrice(Number(maxPrice));
+    }
+
+  }, [router.isReady]);
+
+  if (!items || items.length === 0) {
+    return (
+      <section className="my-0 flex items-center justify-center flex-col min-h-screen">
+        <Image
+          src="/3d/no-data.png"
+          alt="No Data"
+          width={512}
+          height={512}
+          className="mb-4">
+        </Image>
+        {/* <h2 className="text-xl font-bold mb-4 dark:text-white">
+          Best Selling Games
+        </h2>
+        <p className="text-gray-500">No products found in Best Selling.</p> */}
+      </section>
+    );
+  }
 
   return (
     <div className="px-4 md:px-10 py-8">
@@ -508,7 +644,8 @@ export default function index() {
                   <div key={item.id} className='mb-2 mt-2'>
                     {item.Available ? (
                       <Link
-                        href={`/store/category/gift-card/${item.platform}/${item.slug}`}
+                        // href={`/store/category/gift-card/${item.platform}/${item.slug}`}
+                        href={getItemHref(item)}
                         // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
                         className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1">
                         <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">

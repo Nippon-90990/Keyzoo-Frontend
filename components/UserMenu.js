@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FaUserCircle, FaGoogleWallet, FaHandsHelping } from "react-icons/fa";
+import { FaUserCircle, FaGoogleWallet, FaHandsHelping, FaHeart } from "react-icons/fa";
 import { IoGameControllerSharp, IoBagCheck, IoLogOut } from "react-icons/io5";
 import { useAuth } from "@/context/AuthContext";
 
@@ -55,6 +55,14 @@ export default function UserMenu() {
               </Link>
 
               <Link
+                href="/user/favourites"
+                onClick={() => close()}
+                className="flex gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded"
+              >
+                <FaHeart className="text-2xl" /> My Library
+              </Link>
+
+              <Link
                 href="/user/wallet"
                 onClick={() => close()}
                 className="flex gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded"
@@ -71,7 +79,7 @@ export default function UserMenu() {
               </Link>
 
               <Link
-                href="/user/help"
+                href="/contact-us"
                 onClick={() => close()}
                 className="flex gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded"
               >

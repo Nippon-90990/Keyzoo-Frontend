@@ -41,7 +41,7 @@ export default function AccountOverlayMenu({ onClose }) {
             desc: "Your collection of games.",
         },
         {
-            href: "/user/favorites",
+            href: "/user/favourites",
             icon: <FaHeart className="text-blue-400 text-xl" />,
             label: "Favorites",
             desc: "View your favourite games.",
