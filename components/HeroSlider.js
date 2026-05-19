@@ -48,6 +48,11 @@ const HeroSlider = () => {
           border-radius: 9999px;
           transition: background-color 0.3s;
         }
+        .swiper-button-prev::after,
+        .swiper-button-next::after {
+          font-size: 30px !important;
+          font-weight: bold;
+        }
         /* 🔴 HIDE ARROWS ON SMALL DEVICES */
         @media (max-width: 768px) {
           .swiper-button-prev,

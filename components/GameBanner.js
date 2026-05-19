@@ -12,8 +12,16 @@ const GameBanner = () => {
   useEffect(() => {
     async function fetchPromoBanners() {
       try {
-        const res = await fetchFromStrapi('api/game-banners?populate=image');
-        setBanners(res.data || []);
+
+        // const res = await fetchFromStrapi('api/game-banners?populate=image');
+        // setBanners(res.data || []);
+
+        const res = await fetch('/api/home/game-banner');
+
+        const data = await res.json();
+
+        setBanners(data || []);
+
       } catch (err) {
         console.error('Failed to load promo banners:', err);
       }
@@ -27,7 +35,7 @@ const GameBanner = () => {
   if (!banners.length) {
     return (
       // <SkeletonTheme baseColor="#202020" highlightColor="#444">
-        <Skeleton height={280} borderRadius={16} />
+      <Skeleton height={280} borderRadius={16} />
       // </SkeletonTheme>
     );
   }

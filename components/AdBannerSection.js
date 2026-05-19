@@ -72,7 +72,7 @@
 
 
 
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { fetchFromStrapi } from "@/lib/strapi";
 import { getStrapiMedia } from "@/lib/media";
@@ -89,8 +89,18 @@ export default function AdBannerSection() {
     useEffect(() => {
         async function fetchAds() {
             try {
-                const res = await fetchFromStrapi("api/ad-banner-sections?populate=*");
-                setAds(res.data || []);
+
+                // const res = await fetchFromStrapi("api/ad-banner-sections?populate=*");
+                // setAds(res.data || []);
+
+                const res = await fetch(
+                    "/api/home/ad-banner"
+                );
+
+                const data = await res.json();
+
+                setAds(data || []);
+
             } catch (error) {
                 console.error("Failed to fetch ads:", error);
             }

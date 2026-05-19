@@ -11,6 +11,7 @@ import HoverCard from '@/components/HoverCard';
 import toast from "react-hot-toast";
 
 export default function ProductCarousel() {
+
     const { symbol } = useCurrency();
     const [products, setProducts] = useState([]);
     const [notified, setNotified] = useState({});
@@ -67,10 +68,18 @@ export default function ProductCarousel() {
     useEffect(() => {
         async function getProducts() {
             try {
-                const res = await fetchFromStrapi('api/products?filters[hideRecomend][$eq]=false&populate=*');
-                // const resImage = await fetchFromStrapi('/products?populate=image');
-                setProducts(res.data || []);
-                // setProducts(resImage.data || []);
+
+                // const res = await fetchFromStrapi('api/products?filters[hideRecomend][$eq]=false&populate=*');
+                // setProducts(res.data || []);
+
+                const res = await fetch(
+                    '/api/home/recommended-products'
+                );
+
+                const data = await res.json();
+
+                setProducts(data || []);
+
             } catch (error) {
                 console.error('Failed to fetch products:', error);
             }
@@ -111,7 +120,7 @@ export default function ProductCarousel() {
                             {item.Available ? (<Link
                                 href={`/product/${item.slug}`}
                                 // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
-                                className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1"
+                                className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative min-w-[200px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1"
                             >
                                 <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
                                     {/* {imageUrl && ( */}
@@ -137,21 +146,21 @@ export default function ProductCarousel() {
                                         </span>
                                     )}
                                 </div>
-                                <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
+                                <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md h-[120px]'>
                                     <HoverCard title={item.title}>
-                                        <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">
+                                        <h3 className="text-sm font-semibold line-clamp-2 px-1.5 mt-1 text-black">
                                             {item.title}
                                         </h3>
                                     </HoverCard>
-                                    <h3 className="text-lg font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
-                                    <p className="text-lg text-gray-600 dark:text-gray-300 px-3 mt-2 mb-2">
+                                    <h3 className="text-sm font-semibold text-blue-600 px-1.5 mt-0.5">{item.card_region}</h3>
+                                    <p className="text-lg text-gray-600 dark:text-gray-300 px-1.5 mt-1 mb-1.5">
                                         {symbol} {Number(item.discountPrice).toFixed(2)}
                                     </p>
                                 </div>
                             </Link>) : (<div
                                 href={`/product/${item.slug}`}
                                 // className="block p-1 rounded-lg hover:shadow-md transition bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto"
-                                className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative max-w-[260px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1 cursor-not-allowed"
+                                className="block p-1 rounded-lg bg-white dark:bg-[#1a1a1a] relative min-w-[200px] mx-auto shadow-sm dark:shadow-none hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1 cursor-not-allowed"
                             >
                                 <div className="relative w-full aspect-[3/5] mb-1.5 rounded-md overflow-hidden">
                                     {/* {imageUrl && ( */}
@@ -166,7 +175,7 @@ export default function ProductCarousel() {
                                     {/* 🔥 Bottom overlay container */}
                                     <div className="absolute bottom-3 left-0 w-full flex justify-center px-3">
 
-                                        <button onClick={() => handleNotify(item)} disabled={notified[item.id]} className="flex items-center justify-center gap-2 w-full max-w-[85%] bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-white/20 transition shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer">
+                                        <button onClick={() => handleNotify(item)} disabled={notified[item.id]} className="flex items-center justify-center gap-2 w-full max-w-[85%] bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold py-2.5 rounded-md hover:bg-white/20 transition shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer">
                                             {notified[item.id] ? "✔ Notified" : "🔔 Notify me"}
                                         </button>
 
@@ -186,14 +195,14 @@ export default function ProductCarousel() {
                                         </span>
                                     )}
                                 </div>
-                                <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md'>
+                                <div className='bg-gray-100 dark:bg-black/30 backdrop-blur-sm px-1 py-1 rounded-b-md h-[120px]'>
                                     <HoverCard title={item.title}>
-                                        <h3 className="text-sm font-semibold line-clamp-2 px-3 mt-1 text-black">
+                                        <h3 className="text-sm font-semibold line-clamp-2 px-1.5 mt-1 text-black">
                                             {item.title}
                                         </h3>
                                     </HoverCard>
-                                    <h3 className="text-lg font-semibold text-blue-600 px-3 mt-1">{item.card_region}</h3>
-                                    <p className="text-lg text-[#ff0d00e3] font-bold dark:text-gray-300 px-3 mt-2 mb-2">
+                                    <h3 className="text-sm font-semibold text-blue-600 px-1.5 mt-0.5">{item.card_region}</h3>
+                                    <p className="text-lg text-[#cc0000] font-bold dark:text-gray-300 px-1.5 mt-1 mb-1.5">
                                         Sold Out
                                     </p>
                                 </div>

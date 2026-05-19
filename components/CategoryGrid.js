@@ -11,8 +11,16 @@ const CategoryGrid = () => {
   useEffect(() => {
     async function fetchPromoBanners() {
       try {
-        const res = await fetchFromStrapi('api/promo-banners?populate=image');
-        setBanners(res.data || []);
+
+        // const res = await fetchFromStrapi('api/promo-banners?populate=image');
+        // setBanners(res.data || []);
+
+        const res = await fetch('/api/home/category-grid');
+
+        const data = await res.json();
+
+        setBanners(data || []);
+
       } catch (err) {
         console.error('Failed to load promo banners:', err);
       }
@@ -24,12 +32,12 @@ const CategoryGrid = () => {
   //   const linkUrl = attributes.link?.startsWith('http') ? attributes.link : `https://${attributes.link}`;
 
   if (!banners.length) {
-      return (
-        // <SkeletonTheme baseColor="#202020" highlightColor="#444">
-          <Skeleton height={210} borderRadius={16} />
-        // </SkeletonTheme>
-      );
-    }
+    return (
+      // <SkeletonTheme baseColor="#202020" highlightColor="#444">
+      <Skeleton height={210} borderRadius={16} />
+      // </SkeletonTheme>
+    );
+  }
 
   return (
     <div>

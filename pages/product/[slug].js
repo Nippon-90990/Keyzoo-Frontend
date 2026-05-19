@@ -32,6 +32,7 @@ import "swiper/css/navigation"; // ✅ import navigation styles
 import { platformIcons } from "@/lib/platformIcons";
 import HoverCard from "@/components/HoverCard";
 import { getStrapiMedia } from "@/lib/media";
+import redis from "@/lib/redis";
 
 // export async function getServerSideProps({ params }) {
 //   const { slug } = params;
@@ -64,22 +65,75 @@ import { getStrapiMedia } from "@/lib/media";
 //   };
 // }
 
+// export async function getServerSideProps({ params }) {
+
+//   const { slug } = params;
+
+//   const productRes = await fetchFromStrapi(
+//     `api/products?filters[slug][$eq]=${slug}&populate=*`,
+//   );
+
+//   const regionsRes = await fetchFromStrapi(
+//     `api/regions`, // 👈 your region collection
+//   );
+
+//   return {
+//     props: {
+//       product: productRes?.data?.[0] || null,
+//       regionsData: regionsRes?.data || [],
+//     },
+//   };
+// }
+
 export async function getServerSideProps({ params }) {
+
   const { slug } = params;
 
+  const cacheKey = `product:${slug}`;
+
+  // 1. CHECK CACHE
+  try {
+    const cachedData = await redis.get(cacheKey);
+
+    if (cachedData) {
+      console.log("✅ Cache HIT");
+
+      return {
+        props: JSON.parse(cachedData),
+      };
+    }
+  } catch (err) {
+    console.error("Redis error:", err);
+  }
+
+  console.log("❌ Cache MISS");
+
+  // 2. FETCH FROM STRAPI
   const productRes = await fetchFromStrapi(
-    `api/products?filters[slug][$eq]=${slug}&populate=*`,
+    `api/products?filters[slug][$eq]=${slug}&populate=*`
   );
 
-  const regionsRes = await fetchFromStrapi(
-    `api/regions`, // 👈 your region collection
-  );
+  const regionsRes = await fetchFromStrapi(`api/regions`);
+
+  const props = {
+    product: productRes?.data?.[0] || null,
+    regionsData: regionsRes?.data || [],
+  };
+
+  // 3. SAVE CACHE (10 MINUTES)
+  try {
+    await redis.set(
+      cacheKey,
+      JSON.stringify(props),
+      "EX",
+      600
+    );
+  } catch (err) {
+    console.error("Redis save error:", err);
+  }
 
   return {
-    props: {
-      product: productRes?.data?.[0] || null,
-      regionsData: regionsRes?.data || [],
-    },
+    props,
   };
 }
 
@@ -534,11 +588,10 @@ export default function ProductPage({ product, regionsData }) {
                             setSearch("");
                           }}
                           className={`w-full text-left px-4 py-3 text-sm transition uppercase
-                  ${
-                    selectedRegion === region
-                      ? "bg-[#3a3a3a] text-white"
-                      : "text-white/90 hover:bg-[#3a3a3a]"
-                  }
+                  ${selectedRegion === region
+                              ? "bg-[#3a3a3a] text-white"
+                              : "text-white/90 hover:bg-[#3a3a3a]"
+                            }
                 `}
                         >
                           {region}
@@ -630,7 +683,7 @@ export default function ProductPage({ product, regionsData }) {
                             (p) =>
                               p.var_title === edition.var_title &&
                               p.region?.toLowerCase() ===
-                                selectedRegion?.toLowerCase(),
+                              selectedRegion?.toLowerCase(),
                           );
 
                           if (!matched) {
@@ -644,13 +697,12 @@ export default function ProductPage({ product, regionsData }) {
 
                       <div
                         className={`p-4 rounded-xl border bg-[#1a1a1a] transition-all flex flex-col justify-between min-h-[90px]
-                      ${
-                        !isAvailable
-                          ? "border-gray-700 bg-[#111] text-white/40"
-                          : selectedSlug === edition.slug
-                            ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
-                            : "border-[#2e2e2e] hover:border-purple-400"
-                      }`}
+                      ${!isAvailable
+                            ? "border-gray-700 bg-[#111] text-white/40"
+                            : selectedSlug === edition.slug
+                              ? "border-purple-500 ring-2 ring-purple-500/40 scale-[1.02]"
+                              : "border-[#2e2e2e] hover:border-purple-400"
+                          }`}
                       >
                         {" "}
                         {/* className="p-3 rounded-xl border border-[#2e2e2e] bg-[#1a1a1a] peer-checked:border-purple-500" */}

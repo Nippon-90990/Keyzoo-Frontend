@@ -13,8 +13,16 @@ export default function CategoryGrid() {
   useEffect(() => {
     async function getCategoryBanners() {
       try {
-        const res = await fetchFromStrapi('api/category-banners?populate=*');
-        setCategoriesBanner(res.data || []);
+
+        // const res = await fetchFromStrapi('api/category-banners?populate=*');
+        // setCategoriesBanner(res.data || []);
+
+        const res = await fetch('/api/home/category-banners');
+
+        const data = await res.json();
+
+        setCategoriesBanner(data || []);
+
       } catch (err) {
         console.error('Failed to load category banners:', err);
       }
@@ -32,11 +40,11 @@ export default function CategoryGrid() {
   if (!categoriesBanner.length) {
     return (
       // <SkeletonTheme baseColor="#202020" highlightColor="#444">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <Skeleton height={210} borderRadius={16} />
-          <Skeleton height={210} borderRadius={16} />
-          <Skeleton height={210} borderRadius={16} />
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <Skeleton height={210} borderRadius={16} />
+        <Skeleton height={210} borderRadius={16} />
+        <Skeleton height={210} borderRadius={16} />
+      </div>
       // </SkeletonTheme>
     );
   }
@@ -47,7 +55,7 @@ export default function CategoryGrid() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
         {categoriesBanner.map((item) => {
-          
+
           const imgUrl = isMobile
             ? getStrapiMedia(item.mobileImage?.url)
             : getStrapiMedia(item.desktopImage?.url);
